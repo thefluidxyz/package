@@ -1,0 +1,8 @@
+/* Can't style the html tag with theme-ui, so put styles in here */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  height: 100%;
+}
