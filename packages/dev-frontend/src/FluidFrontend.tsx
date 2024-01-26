@@ -51,7 +51,7 @@ export const FluidFrontend: React.FC<FluidFrontendProps> = ({ loader }) => {
           <StabilityViewProvider>
             <StakingViewProvider>
               <BondsProvider>
-                <div className="flex flex-col min-h-full px-5 md:px-10 lg:px-[60px]">
+                <div className="flex flex-col min-h-full px-5 md:px-10 lg:px-[60px] pb-[166px]">
                   <div className="flex flex-row justify-between py-4 px-0 sm:px-4">
                     <FluidLogo />
                     <UserAccount />
