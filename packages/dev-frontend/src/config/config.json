@@ -1,7 +1,7 @@
 {
     "loaded": true,
     "value": {
-        "walletConnectProjectId": "",
+        "walletConnectProjectId": "24d547f289323c33cf13ea9294a83360",
         "infuraApiKey": "",
         "alchemyApiKey": "",
         "testnetOnly": false
