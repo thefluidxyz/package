@@ -6,11 +6,11 @@ export const Footer: React.FC = () => {
                 Fluid
             </div>
             <div className="flex flex-row items-center justify-center gap-5 py-[9px] pb-[35px] sm:p-0">
-                <img src="./icons/x.png" className="w-[42px] h-[42px]" />
-                <img src="./icons/telegram.png" className="w-[42px] h-[42px]" />
-                <img src="./icons/github.png" className="w-[42px] h-[42px]" />
-                <img src="./icons/speaker.png" className="w-[42px] h-[42px]" />
-                <img src="./icons/documentation.png" className="w-[42px] h-[42px]" />
+                <a href="https://twitter.com/Fluid_xyz" target="_blank"><img src="./icons/x.png" className="w-[42px] h-[42px]" /></a>
+                <a href="https://t.me/fluidxyz" target="_blank"><img src="./icons/telegram.png" className="w-[42px] h-[42px]" /></a>
+                <a href="https://github.com/thefluidxyz/package" target="_blank"><img src="./icons/github.png" className="w-[42px] h-[42px]" /></a>
+                {/* <a href="https://t.me/fluidxyz" target="_blank"><img src="./icons/speaker.png" className="w-[42px] h-[42px]" /></a> */}
+                <a href="https://thefluid.gitbook.io/docs" target="_blank"><img src="./icons/documentation.png" className="w-[42px] h-[42px]" /></a>
             </div>
         </div>
     )
