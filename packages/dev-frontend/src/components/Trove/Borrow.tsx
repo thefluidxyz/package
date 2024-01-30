@@ -158,10 +158,14 @@ export const Borrow: React.FC = () => {
     setCollateralRatio(Decimal.from(collateral.mulDiv(price, Decimal.from(e.target.value).add(LUSD_LIQUIDATION_RESERVE).add(fee))))
   }
 
+  const handleRedeemTrove = useCallback(() => {
+    dispatchEvent("CLOSE_TROVE_PRESSED");
+  }, [dispatchEvent]);
+
   return (
     <div className="mt-7 lg:mt-8">
       <div className="flex flex-row justify-between text-[32px] font-semibold p-0 sm:pl-4 sm:pr-2 py-2">
-        <div>Borrow &nbsp; <Text sx={{ opacity: 0.3 }}>Redeem</Text></div>
+        <div>Borrow &nbsp; <Text sx={{ opacity: 0.3 }}><span className="cursor-pointer" onClick={handleRedeemTrove}>Redeem</span></Text></div>
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />

@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Flex, Button } from "theme-ui";
 
 import { FluidStoreState, Decimal, Trove, Decimalish, LUSD_MINIMUM_DEBT } from "@fluid/lib-base";
 
 import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@fluid/lib-react";
 
-import { ActionDescription } from "../ActionDescription";
+// import { ActionDescription } from "../ActionDescription";
 import { useMyTransactionState } from "../Transaction";
 
 import { TroveEditor } from "./TroveEditor";
@@ -171,7 +171,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
   const borrowingRate = fees.borrowingRate();
   const maxBorrowingRate = borrowingRate.add(0.005); // WONT-FIX slippage tolerance
 
-  const [validChange, description] = validateTroveChange(
+  const [validChange, ] = validateTroveChange(
     original,
     edited,
     borrowingRate,
@@ -180,11 +180,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
 
   const { dispatchEvent } = useTroveView();
 
-  const handleCancel = useCallback(() => {
-    dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
-  }, [dispatchEvent]);
-
-  const openingNewTrove = original.isEmpty;
+  // const openingNewTrove = original.isEmpty;
 
   const myTransactionState = useMyTransactionState(transactionIdMatcher);
 
@@ -214,7 +210,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       changePending={changePending}
       dispatch={dispatch}
     >
-      {description ??
+      {/* {description ??
         (openingNewTrove ? (
           <ActionDescription>
             Start by entering the amount of ETH you'd like to deposit as collateral.
@@ -223,12 +219,12 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
           <ActionDescription>
             Adjust your Trove by modifying its collateral, debt, or both.
           </ActionDescription>
-        ))}
+        ))} */}
 
       <Flex variant="layout.actions">
-        <Button variant="cancel" onClick={handleCancel}>
+        {/* <Button variant="cancel" onClick={handleCancel}>
           Cancel
-        </Button>
+        </Button> */}
 
         {validChange ? (
           <TroveAction
@@ -237,7 +233,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
             maxBorrowingRate={maxBorrowingRate}
             borrowingFeeDecayToleranceMinutes={60}
           >
-            Confirm
+            Complete transaction
           </TroveAction>
         ) : (
           <Button disabled>Confirm</Button>

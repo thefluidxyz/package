@@ -6,7 +6,10 @@
 // import { PriceManager } from "../components/PriceManager";
 // import { Staking } from "../components/Staking/Staking";
 // import { BondsTable } from "../components/Bonds/BondsTable";
-// import { TroveManager } from "../components/Trove/TroveManager";
+import {
+  Decimal,
+} from "@fluid/lib-base";
+import { TroveManager } from "../components/Trove/TroveManager";
 import { ReadOnlyTrove } from "../components/Trove/ReadOnlyTrove";
 import { ReadOnlyStats } from "../components/Trove/ReadOnlyStats";
 // import { NoTrove } from "../components/Trove/NoTrove";
@@ -19,6 +22,7 @@ import { useTroveView } from "../components/Trove/context/TroveViewContext";
 
 export const Dashboard: React.FC = props => {
   const { view } = useTroveView();
+  console.log (view, "KKKKKKKKKKKKK")
 
   return (
     <>
@@ -46,7 +50,10 @@ export const Dashboard: React.FC = props => {
             (view === "ACTIVE" || view === "ADJUSTING") && <Borrow />
           }
           {
-            (view === "CLOSING" || view === "OPENING" || view === "LIQUIDATED" || view === "NONE" || view === "REDEEMED") && <Opening />
+            (view === "OPENING" || view === "LIQUIDATED" || view === "NONE" || view === "REDEEMED") && <Opening />
+          }
+          {
+            view === "CLOSING" && <TroveManager {...props} collateral={Decimal.ZERO} debt={Decimal.ZERO}  />
           }
           {/* <PriceManager /> */}
         </div>
