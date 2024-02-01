@@ -2,7 +2,7 @@ import { Decimal } from "./Decimal";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Fees } from "./Fees";
-import { LQTYStake } from "./LQTYStake";
+import { FLOStake } from "./FLOStake";
 
 /**
  * Represents whether an address has been registered as a Liquity frontend.
@@ -102,66 +102,66 @@ export interface ReadableFluid {
   getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
 
   /**
-   * Get the remaining LQTY that will be collectively rewarded to stability depositors.
+   * Get the remaining FLO that will be collectively rewarded to stability depositors.
    */
-  getRemainingStabilityPoolLQTYReward(): Promise<Decimal>;
+  getRemainingStabilityPoolFLOReward(): Promise<Decimal>;
 
   /**
-   * Get the total amount of LUSD currently deposited in the Stability Pool.
+   * Get the total amount of SAI currently deposited in the Stability Pool.
    */
-  getLUSDInStabilityPool(): Promise<Decimal>;
+  getSAIInStabilityPool(): Promise<Decimal>;
 
   /**
-   * Get the amount of LUSD held by an address.
+   * Get the amount of SAI held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getLUSDBalance(address?: string): Promise<Decimal>;
+  getSAIBalance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the amount of LQTY held by an address.
+   * Get the amount of FLO held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getLQTYBalance(address?: string): Promise<Decimal>;
+  getFLOBalance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the amount of Uniswap ETH/LUSD LP tokens held by an address.
+   * Get the amount of Uniswap SEI/SAI LP tokens held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
   getUniTokenBalance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the liquidity mining contract's allowance of a holder's Uniswap ETH/LUSD LP tokens.
+   * Get the liquidity mining contract's allowance of a holder's Uniswap SEI/SAI LP tokens.
    *
-   * @param address - Address holding the Uniswap ETH/LUSD LP tokens.
+   * @param address - Address holding the Uniswap SEI/SAI LP tokens.
    */
   getUniTokenAllowance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the remaining LQTY that will be collectively rewarded to liquidity miners.
+   * Get the remaining FLO that will be collectively rewarded to liquidity miners.
    */
-  getRemainingLiquidityMiningLQTYReward(): Promise<Decimal>;
+  getRemainingLiquidityMiningFLOReward(): Promise<Decimal>;
 
   /**
-   * Get the amount of Uniswap ETH/LUSD LP tokens currently staked by an address in liquidity mining.
+   * Get the amount of Uniswap SEI/SAI LP tokens currently staked by an address in liquidity mining.
    *
    * @param address - Address whose LP stake should be retrieved.
    */
   getLiquidityMiningStake(address?: string): Promise<Decimal>;
 
   /**
-   * Get the total amount of Uniswap ETH/LUSD LP tokens currently staked in liquidity mining.
+   * Get the total amount of Uniswap SEI/SAI LP tokens currently staked in liquidity mining.
    */
   getTotalStakedUniTokens(): Promise<Decimal>;
 
   /**
-   * Get the amount of LQTY earned by an address through mining liquidity.
+   * Get the amount of FLO earned by an address through mining liquidity.
    *
-   * @param address - Address whose LQTY reward should be retrieved.
+   * @param address - Address whose FLO reward should be retrieved.
    */
-  getLiquidityMiningLQTYReward(address?: string): Promise<Decimal>;
+  getLiquidityMiningFLOReward(address?: string): Promise<Decimal>;
 
   /**
    * Get the amount of leftover collateral available for withdrawal by an address.
@@ -193,16 +193,16 @@ export interface ReadableFluid {
   getFees(): Promise<Fees>;
 
   /**
-   * Get the current state of an LQTY Stake.
+   * Get the current state of an FLO Stake.
    *
-   * @param address - Address that owns the LQTY Stake.
+   * @param address - Address that owns the FLO Stake.
    */
-  getLQTYStake(address?: string): Promise<LQTYStake>;
+  getFLOStake(address?: string): Promise<FLOStake>;
 
   /**
-   * Get the total amount of LQTY currently staked.
+   * Get the total amount of FLO currently staked.
    */
-  getTotalStakedLQTY(): Promise<Decimal>;
+  getTotalStakedFLO(): Promise<Decimal>;
 
   /**
    * Check whether an address is registered as a Liquity frontend, and what its kickback rate is.

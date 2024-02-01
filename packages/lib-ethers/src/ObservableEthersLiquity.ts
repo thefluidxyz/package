@@ -48,22 +48,22 @@ export class ObservableEthersLiquity implements ObservableFluid {
     onTotalRedistributedChanged: (totalRedistributed: Trove) => void
   ): () => void {
     const { activePool, defaultPool } = _getContracts(this._readable.connection);
-    const etherSent = activePool.filters.EtherSent();
+    const seiSent = activePool.filters.SeiSent();
 
     const redistributionListener = debounce((blockTag: number) => {
       this._readable.getTotalRedistributed({ blockTag }).then(onTotalRedistributedChanged);
     });
 
-    const etherSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
+    const seiSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
       if (toAddress === defaultPool.address) {
         redistributionListener(event);
       }
     };
 
-    activePool.on(etherSent, etherSentListener);
+    activePool.on(seiSent, seiSentListener);
 
     return () => {
-      activePool.removeListener(etherSent, etherSentListener);
+      activePool.removeListener(seiSent, seiSentListener);
     };
   }
 
@@ -138,16 +138,16 @@ export class ObservableEthersLiquity implements ObservableFluid {
 
     const { activePool, stabilityPool } = _getContracts(this._readable.connection);
     const { UserDepositChanged } = stabilityPool.filters;
-    const { EtherSent } = activePool.filters;
+    const { SeiSent } = activePool.filters;
 
     const userDepositChanged = UserDepositChanged(address);
-    const etherSent = EtherSent();
+    const seiSent = SeiSent();
 
     const depositListener = debounce((blockTag: number) => {
       this._readable.getStabilityDeposit(address, { blockTag }).then(onStabilityDepositChanged);
     });
 
-    const etherSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
+    const seiSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
       if (toAddress === stabilityPool.address) {
         // Liquidation while Stability Pool has some deposits
         // There may be new gains
@@ -156,54 +156,54 @@ export class ObservableEthersLiquity implements ObservableFluid {
     };
 
     stabilityPool.on(userDepositChanged, depositListener);
-    activePool.on(etherSent, etherSentListener);
+    activePool.on(seiSent, seiSentListener);
 
     return () => {
       stabilityPool.removeListener(userDepositChanged, depositListener);
-      activePool.removeListener(etherSent, etherSentListener);
+      activePool.removeListener(seiSent, seiSentListener);
     };
   }
 
-  watchLUSDInStabilityPool(
-    onLUSDInStabilityPoolChanged: (lusdInStabilityPool: Decimal) => void
+  watchSAIInStabilityPool(
+    onSAIInStabilityPoolChanged: (saiInStabilityPool: Decimal) => void
   ): () => void {
-    const { lusdToken, stabilityPool } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
+    const { saiToken, stabilityPool } = _getContracts(this._readable.connection);
+    const { Transfer } = saiToken.filters;
 
-    const transferLUSDFromStabilityPool = Transfer(stabilityPool.address);
-    const transferLUSDToStabilityPool = Transfer(null, stabilityPool.address);
+    const transferSAIFromStabilityPool = Transfer(stabilityPool.address);
+    const transferSAIToStabilityPool = Transfer(null, stabilityPool.address);
 
-    const stabilityPoolLUSDFilters = [transferLUSDFromStabilityPool, transferLUSDToStabilityPool];
+    const stabilityPoolSAIFilters = [transferSAIFromStabilityPool, transferSAIToStabilityPool];
 
-    const stabilityPoolLUSDListener = debounce((blockTag: number) => {
-      this._readable.getLUSDInStabilityPool({ blockTag }).then(onLUSDInStabilityPoolChanged);
+    const stabilityPoolSAIListener = debounce((blockTag: number) => {
+      this._readable.getSAIInStabilityPool({ blockTag }).then(onSAIInStabilityPoolChanged);
     });
 
-    stabilityPoolLUSDFilters.forEach(filter => lusdToken.on(filter, stabilityPoolLUSDListener));
+    stabilityPoolSAIFilters.forEach(filter => saiToken.on(filter, stabilityPoolSAIListener));
 
     return () =>
-      stabilityPoolLUSDFilters.forEach(filter =>
-        lusdToken.removeListener(filter, stabilityPoolLUSDListener)
+      stabilityPoolSAIFilters.forEach(filter =>
+        saiToken.removeListener(filter, stabilityPoolSAIListener)
       );
   }
 
-  watchLUSDBalance(onLUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
+  watchSAIBalance(onSAIBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
     address ??= _requireAddress(this._readable.connection);
 
-    const { lusdToken } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
-    const transferLUSDFromUser = Transfer(address);
-    const transferLUSDToUser = Transfer(null, address);
+    const { saiToken } = _getContracts(this._readable.connection);
+    const { Transfer } = saiToken.filters;
+    const transferSAIFromUser = Transfer(address);
+    const transferSAIToUser = Transfer(null, address);
 
-    const lusdTransferFilters = [transferLUSDFromUser, transferLUSDToUser];
+    const saiTransferFilters = [transferSAIFromUser, transferSAIToUser];
 
-    const lusdTransferListener = debounce((blockTag: number) => {
-      this._readable.getLUSDBalance(address, { blockTag }).then(onLUSDBalanceChanged);
+    const saiTransferListener = debounce((blockTag: number) => {
+      this._readable.getSAIBalance(address, { blockTag }).then(onSAIBalanceChanged);
     });
 
-    lusdTransferFilters.forEach(filter => lusdToken.on(filter, lusdTransferListener));
+    saiTransferFilters.forEach(filter => saiToken.on(filter, saiTransferListener));
 
     return () =>
-      lusdTransferFilters.forEach(filter => lusdToken.removeListener(filter, lusdTransferListener));
+      saiTransferFilters.forEach(filter => saiToken.removeListener(filter, saiTransferListener));
   }
 }

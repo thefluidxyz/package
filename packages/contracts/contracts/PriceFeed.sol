@@ -9,11 +9,11 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
-import "./Dependencies/LiquityMath.sol";
+import "./Dependencies/FluidMath.sol";
 import "./Dependencies/console.sol";
 
 /*
-* PriceFeed for mainnet deployment, to be connected to Chainlink's live ETH:USD aggregator reference 
+* PriceFeed for mainnet deployment, to be connected to Chainlink's live SEI:USD aggregator reference 
 * contract, and a wrapper contract TellorCaller, which connects to TellorMaster contract.
 *
 * The PriceFeed uses Chainlink as primary oracle, and Tellor as fallback. It contains logic for
@@ -28,11 +28,11 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     AggregatorV3Interface public priceAggregator;  // Mainnet Chainlink aggregator
     ITellorCaller public tellorCaller;  // Wrapper contract that calls the Tellor system
 
-    // Core Liquity contracts
+    // Core Fluid contracts
     address borrowerOperationsAddress;
     address troveManagerAddress;
 
-    uint constant public ETHUSD_TELLOR_REQ_ID = 1;
+    uint constant public SEIUSD_TELLOR_REQ_ID = 1;
 
     // Use to convert a price answer to an 18-digit precision uint
     uint constant public TARGET_DIGITS = 18;  
@@ -50,7 +50,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     */
     uint constant public MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES = 5e16; // 5%
 
-    // The last good price seen from an oracle by Liquity
+    // The last good price seen from an oracle by Fluid
     uint public lastGoodPrice;
 
     struct ChainlinkResponse {
@@ -116,14 +116,14 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     /*
     * fetchPrice():
-    * Returns the latest price obtained from the Oracle. Called by Liquity functions that require a current price.
+    * Returns the latest price obtained from the Oracle. Called by Fluid functions that require a current price.
     *
     * Also callable by anyone externally.
     *
-    * Non-view function - it stores the last good price seen by Liquity.
+    * Non-view function - it stores the last good price seen by Fluid.
     *
     * Uses a main oracle (Chainlink) and a fallback oracle (Tellor) in case Chainlink fails. If both fail, 
-    * it uses the last good price seen by Liquity.
+    * it uses the last good price seen by Fluid.
     *
     */
     function fetchPrice() external override returns (uint) {
@@ -368,8 +368,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         uint currentScaledPrice = _scaleChainlinkPriceByDigits(uint256(_currentResponse.answer), _currentResponse.decimals);
         uint prevScaledPrice = _scaleChainlinkPriceByDigits(uint256(_prevResponse.answer), _prevResponse.decimals);
 
-        uint minPrice = LiquityMath._min(currentScaledPrice, prevScaledPrice);
-        uint maxPrice = LiquityMath._max(currentScaledPrice, prevScaledPrice);
+        uint minPrice = FluidMath._min(currentScaledPrice, prevScaledPrice);
+        uint maxPrice = FluidMath._max(currentScaledPrice, prevScaledPrice);
 
         /*
         * Use the larger price as the denominator:
@@ -427,8 +427,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         uint scaledTellorPrice = _scaleTellorPriceByDigits(_tellorResponse.value);
 
         // Get the relative price difference between the oracles. Use the lower price as the denominator, i.e. the reference for the calculation.
-        uint minPrice = LiquityMath._min(scaledTellorPrice, scaledChainlinkPrice);
-        uint maxPrice = LiquityMath._max(scaledTellorPrice, scaledChainlinkPrice);
+        uint minPrice = FluidMath._min(scaledTellorPrice, scaledChainlinkPrice);
+        uint maxPrice = FluidMath._max(scaledTellorPrice, scaledChainlinkPrice);
         uint percentPriceDifference = maxPrice.sub(minPrice).mul(DECIMAL_PRECISION).div(minPrice);
 
         /*
@@ -440,18 +440,18 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     function _scaleChainlinkPriceByDigits(uint _price, uint _answerDigits) internal pure returns (uint) {
         /*
-        * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Liquity.
-        * At date of Liquity launch, Chainlink uses an 8-digit price, but we also handle the possibility of
+        * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Fluid.
+        * At date of Fluid launch, Chainlink uses an 8-digit price, but we also handle the possibility of
         * future changes.
         *
         */
         uint price;
         if (_answerDigits >= TARGET_DIGITS) {
-            // Scale the returned price value down to Liquity's target precision
+            // Scale the returned price value down to Fluid's target precision
             price = _price.div(10 ** (_answerDigits - TARGET_DIGITS));
         }
         else if (_answerDigits < TARGET_DIGITS) {
-            // Scale the returned price value up to Liquity's target precision
+            // Scale the returned price value up to Fluid's target precision
             price = _price.mul(10 ** (TARGET_DIGITS - _answerDigits));
         }
         return price;
@@ -488,7 +488,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     // --- Oracle response wrapper functions ---
 
     function _getCurrentTellorResponse() internal view returns (TellorResponse memory tellorResponse) {
-        try tellorCaller.getTellorCurrentValue(ETHUSD_TELLOR_REQ_ID) returns
+        try tellorCaller.getTellorCurrentValue(SEIUSD_TELLOR_REQ_ID) returns
         (
             bool ifRetrieve,
             uint256 value,

@@ -2,7 +2,7 @@ export * from "./src/constants";
 export * from "./src/Decimal";
 export * from "./src/Trove";
 export * from "./src/StabilityDeposit";
-export * from "./src/LQTYStake";
+export * from "./src/FLOStake";
 export * from "./src/Fees";
 export * from "./src/ReadableFluid";
 export * from "./src/ObservableFluid";

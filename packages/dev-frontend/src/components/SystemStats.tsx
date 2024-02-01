@@ -8,21 +8,21 @@ import { useFluid } from "../hooks/FluidContext";
 import { Statistic } from "./Statistic";
 import * as l from "../lexicon";
 
-const selectBalances = ({ accountBalance, lusdBalance, lqtyBalance }: FluidStoreState) => ({
+const selectBalances = ({ accountBalance, saiBalance, floBalance }: FluidStoreState) => ({
   accountBalance,
-  lusdBalance,
-  lqtyBalance
+  saiBalance,
+  floBalance
 });
 
 const Balances: React.FC = () => {
-  const { accountBalance, lusdBalance, lqtyBalance } = useLiquitySelector(selectBalances);
+  const { accountBalance, saiBalance, floBalance } = useLiquitySelector(selectBalances);
 
   return (
     <Box sx={{ mb: 3 }}>
       <Heading>My Account Balances</Heading>
       <Statistic lexicon={l.ETH}>{accountBalance.prettify(4)}</Statistic>
-      <Statistic lexicon={l.LUSD}>{lusdBalance.prettify()}</Statistic>
-      <Statistic lexicon={l.LQTY}>{lqtyBalance.prettify()}</Statistic>
+      <Statistic lexicon={l.SAI}>{saiBalance.prettify()}</Statistic>
+      <Statistic lexicon={l.FLO}>{floBalance.prettify()}</Statistic>
     </Box>
   );
 };
@@ -43,19 +43,19 @@ const select = ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  saiInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedFLO,
   frontend
 }: FluidStoreState) => ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  saiInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedFLO,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
 
@@ -69,15 +69,15 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   const {
     numberOfTroves,
     price,
-    lusdInStabilityPool,
+    saiInStabilityPool,
     total,
     borrowingRate,
-    totalStakedLQTY,
+    totalStakedFLO,
     kickbackRate
   } = useLiquitySelector(select);
 
-  const lusdInStabilityPoolPct =
-    total.debt.nonZero && new Percent(lusdInStabilityPool.div(total.debt));
+  const saiInStabilityPoolPct =
+    total.debt.nonZero && new Percent(saiInStabilityPool.div(total.debt));
   const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
   const borrowingFeePct = new Percent(borrowingRate);
   const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
@@ -101,14 +101,14 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
         </Text>
       </Statistic>
       <Statistic lexicon={l.TROVES}>{Decimal.from(numberOfTroves).prettify(0)}</Statistic>
-      <Statistic lexicon={l.LUSD_SUPPLY}>{total.debt.shorten()}</Statistic>
-      {lusdInStabilityPoolPct && (
-        <Statistic lexicon={l.STABILITY_POOL_LUSD}>
-          {lusdInStabilityPool.shorten()}
-          <Text sx={{ fontSize: 1 }}>&nbsp;({lusdInStabilityPoolPct.toString(1)})</Text>
+      <Statistic lexicon={l.SAI_SUPPLY}>{total.debt.shorten()}</Statistic>
+      {saiInStabilityPoolPct && (
+        <Statistic lexicon={l.STABILITY_POOL_SAI}>
+          {saiInStabilityPool.shorten()}
+          <Text sx={{ fontSize: 1 }}>&nbsp;({saiInStabilityPoolPct.toString(1)})</Text>
         </Statistic>
       )}
-      <Statistic lexicon={l.STAKED_LQTY}>{totalStakedLQTY.shorten()}</Statistic>
+      <Statistic lexicon={l.STAKED_FLO}>{totalStakedFLO.shorten()}</Statistic>
       <Statistic lexicon={l.TCR}>{totalCollateralRatioPct.prettify()}</Statistic>
       <Statistic lexicon={l.RECOVERY_MODE}>
         {total.collateralRatioIsBelowCritical(price) ? <Box color="danger">Yes</Box> : "No"}

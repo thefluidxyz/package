@@ -6,7 +6,7 @@ import { AlchemyProvider } from "@ethersproject/providers";
 
 import { Decimal } from "@fluid/lib-base";
 
-const outputFile = "eth-usd.csv";
+const outputFile = "sei-usd.csv";
 
 const phase = 2;
 const answerDecimals = 8;

@@ -4,7 +4,7 @@ import { Decimal } from "./Decimal";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { Fees } from "./Fees";
-import { LQTYStake } from "./LQTYStake";
+import { FLOStake } from "./FLOStake";
 import { FrontendStatus } from "./ReadableFluid";
 
 /**
@@ -25,29 +25,29 @@ export interface FluidStoreBaseState {
   /** User's native currency balance (e.g. Ether). */
   accountBalance: Decimal;
 
-  /** User's LUSD token balance. */
-  lusdBalance: Decimal;
+  /** User's SAI token balance. */
+  saiBalance: Decimal;
 
-  /** User's LQTY token balance. */
-  lqtyBalance: Decimal;
+  /** User's FLO token balance. */
+  floBalance: Decimal;
 
-  /** User's Uniswap ETH/LUSD LP token balance. */
+  /** User's Uniswap SEI/SAI LP token balance. */
   uniTokenBalance: Decimal;
 
-  /** The liquidity mining contract's allowance of user's Uniswap ETH/LUSD LP tokens. */
+  /** The liquidity mining contract's allowance of user's Uniswap SEI/SAI LP tokens. */
   uniTokenAllowance: Decimal;
 
-  /** Remaining LQTY that will be collectively rewarded to liquidity miners. */
-  remainingLiquidityMiningLQTYReward: Decimal;
+  /** Remaining FLO that will be collectively rewarded to liquidity miners. */
+  remainingLiquidityMiningFLOReward: Decimal;
 
-  /** Amount of Uniswap ETH/LUSD LP tokens the user has staked in liquidity mining. */
+  /** Amount of Uniswap SEI/SAI LP tokens the user has staked in liquidity mining. */
   liquidityMiningStake: Decimal;
 
-  /** Total amount of Uniswap ETH/LUSD LP tokens currently staked in liquidity mining. */
+  /** Total amount of Uniswap SEI/SAI LP tokens currently staked in liquidity mining. */
   totalStakedUniTokens: Decimal;
 
-  /** Amount of LQTY the user has earned through mining liquidity. */
-  liquidityMiningLQTYReward: Decimal;
+  /** Amount of FLO the user has earned through mining liquidity. */
+  liquidityMiningFLOReward: Decimal;
 
   /**
    * Amount of leftover collateral available for withdrawal to the user.
@@ -61,8 +61,8 @@ export interface FluidStoreBaseState {
   /** Current price of the native currency (e.g. Ether) in USD. */
   price: Decimal;
 
-  /** Total amount of LUSD currently deposited in the Stability Pool. */
-  lusdInStabilityPool: Decimal;
+  /** Total amount of SAI currently deposited in the Stability Pool. */
+  saiInStabilityPool: Decimal;
 
   /** Total collateral and debt in the Liquity system. */
   total: Trove;
@@ -87,17 +87,17 @@ export interface FluidStoreBaseState {
   /** User's stability deposit. */
   stabilityDeposit: StabilityDeposit;
 
-  /** Remaining LQTY that will be collectively rewarded to stability depositors. */
-  remainingStabilityPoolLQTYReward: Decimal;
+  /** Remaining FLO that will be collectively rewarded to stability depositors. */
+  remainingStabilityPoolFLOReward: Decimal;
 
   /** @internal */
   _feesInNormalMode: Fees;
 
-  /** User's LQTY stake. */
-  lqtyStake: LQTYStake;
+  /** User's FLO stake. */
+  floStake: FLOStake;
 
-  /** Total amount of LQTY currently staked. */
-  totalStakedLQTY: Decimal;
+  /** Total amount of FLO currently staked. */
+  totalStakedFLO: Decimal;
 
   /** @internal */
   _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -130,7 +130,7 @@ export interface FluidStoreDerivedState {
    * Current redemption rate.
    *
    * @remarks
-   * Note that the actual rate paid by a redemption transaction will depend on the amount of LUSD
+   * Note that the actual rate paid by a redemption transaction will depend on the amount of SAI
    * being redeemed.
    *
    * Use {@link Fees.redemptionRate} to calculate a precise redemption rate.
@@ -208,7 +208,7 @@ const difference = <T>(a: T, b: T) =>
  *
  * @public
  */
-export abstract class FluidStore<T = unknown> {
+export abstract class FluidStore<T = any> {
   /** Turn console logging on/off. */
   logging = false;
 
@@ -352,18 +352,18 @@ export abstract class FluidStore<T = unknown> {
         baseStateUpdate.accountBalance
       ),
 
-      lusdBalance: this._updateIfChanged(
+      saiBalance: this._updateIfChanged(
         eq,
-        "lusdBalance",
-        baseState.lusdBalance,
-        baseStateUpdate.lusdBalance
+        "saiBalance",
+        baseState.saiBalance,
+        baseStateUpdate.saiBalance
       ),
 
-      lqtyBalance: this._updateIfChanged(
+      floBalance: this._updateIfChanged(
         eq,
-        "lqtyBalance",
-        baseState.lqtyBalance,
-        baseStateUpdate.lqtyBalance
+        "floBalance",
+        baseState.floBalance,
+        baseStateUpdate.floBalance
       ),
 
       uniTokenBalance: this._updateIfChanged(
@@ -380,10 +380,10 @@ export abstract class FluidStore<T = unknown> {
         baseStateUpdate.uniTokenAllowance
       ),
 
-      remainingLiquidityMiningLQTYReward: this._silentlyUpdateIfChanged(
+      remainingLiquidityMiningFLOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.remainingLiquidityMiningLQTYReward,
-        baseStateUpdate.remainingLiquidityMiningLQTYReward
+        baseState.remainingLiquidityMiningFLOReward,
+        baseStateUpdate.remainingLiquidityMiningFLOReward
       ),
 
       liquidityMiningStake: this._updateIfChanged(
@@ -400,10 +400,10 @@ export abstract class FluidStore<T = unknown> {
         baseStateUpdate.totalStakedUniTokens
       ),
 
-      liquidityMiningLQTYReward: this._silentlyUpdateIfChanged(
+      liquidityMiningFLOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.liquidityMiningLQTYReward,
-        baseStateUpdate.liquidityMiningLQTYReward
+        baseState.liquidityMiningFLOReward,
+        baseStateUpdate.liquidityMiningFLOReward
       ),
 
       collateralSurplusBalance: this._updateIfChanged(
@@ -415,11 +415,11 @@ export abstract class FluidStore<T = unknown> {
 
       price: this._updateIfChanged(eq, "price", baseState.price, baseStateUpdate.price),
 
-      lusdInStabilityPool: this._updateIfChanged(
+      saiInStabilityPool: this._updateIfChanged(
         eq,
-        "lusdInStabilityPool",
-        baseState.lusdInStabilityPool,
-        baseStateUpdate.lusdInStabilityPool
+        "saiInStabilityPool",
+        baseState.saiInStabilityPool,
+        baseStateUpdate.saiInStabilityPool
       ),
 
       total: this._updateIfChanged(equals, "total", baseState.total, baseStateUpdate.total),
@@ -445,10 +445,10 @@ export abstract class FluidStore<T = unknown> {
         baseStateUpdate.stabilityDeposit
       ),
 
-      remainingStabilityPoolLQTYReward: this._silentlyUpdateIfChanged(
+      remainingStabilityPoolFLOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.remainingStabilityPoolLQTYReward,
-        baseStateUpdate.remainingStabilityPoolLQTYReward
+        baseState.remainingStabilityPoolFLOReward,
+        baseStateUpdate.remainingStabilityPoolFLOReward
       ),
 
       _feesInNormalMode: this._silentlyUpdateIfChanged(
@@ -457,18 +457,18 @@ export abstract class FluidStore<T = unknown> {
         baseStateUpdate._feesInNormalMode
       ),
 
-      lqtyStake: this._updateIfChanged(
+      floStake: this._updateIfChanged(
         equals,
-        "lqtyStake",
-        baseState.lqtyStake,
-        baseStateUpdate.lqtyStake
+        "floStake",
+        baseState.floStake,
+        baseStateUpdate.floStake
       ),
 
-      totalStakedLQTY: this._updateIfChanged(
+      totalStakedFLO: this._updateIfChanged(
         eq,
-        "totalStakedLQTY",
-        baseState.totalStakedLQTY,
-        baseStateUpdate.totalStakedLQTY
+        "totalStakedFLO",
+        baseState.totalStakedFLO,
+        baseStateUpdate.totalStakedFLO
       ),
 
       _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(

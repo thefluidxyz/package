@@ -10,3 +10,7 @@ html {
   font-family: "Lunchtype22";
   src: url('fonts/Lunchtype22-Regular.ttf') format('truetype'),
 }
+
+.black-background {
+  background-color: #343434;
+}

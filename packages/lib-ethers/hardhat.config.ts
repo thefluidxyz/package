@@ -70,14 +70,14 @@ const oracleAddresses = {
     chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
   },
-  rinkeby: {
-    chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
-  },
-  kovan: {
-    chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
-    tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
-  },
+  // rinkeby: {
+  //   chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
+  //   tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
+  // },
+  // kovan: {
+  //   chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
+  //   tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
+  // },
   goerli: {
     chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
     tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
@@ -93,8 +93,8 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
 
 const wethAddresses = {
   mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+  // ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+  // rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
@@ -121,10 +121,10 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
 
-    ...infuraNetwork("ropsten"),
-    ...infuraNetwork("rinkeby"),
+    // ...infuraNetwork("ropsten"),
+    // ...infuraNetwork("rinkeby"),
     ...infuraNetwork("goerli"),
-    ...infuraNetwork("kovan"),
+    // ...infuraNetwork("kovan"),
     ...infuraNetwork("sepolia"),
     ...infuraNetwork("mainnet"),
 
@@ -207,7 +207,7 @@ task("deploy", "Deploys the contracts to the network")
   )
   .addOptionalParam(
     "createUniswapPair",
-    "Create a real Uniswap v2 WETH-LUSD pair instead of a mock ERC20 token",
+    "Create a real Uniswap v2 WETH-SAI pair instead of a mock ERC20 token",
     undefined,
     types.boolean
   )

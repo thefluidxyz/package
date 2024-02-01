@@ -31,7 +31,7 @@ export interface TroveCreationDetails {
   /** The Trove that was created by the transaction. */
   newTrove: Trove;
 
-  /** Amount of LUSD added to the Trove's debt as borrowing fee. */
+  /** Amount of SAI added to the Trove's debt as borrowing fee. */
   fee: Decimal;
 }
 
@@ -47,7 +47,7 @@ export interface TroveAdjustmentDetails {
   /** New state of the adjusted Trove directly after the transaction. */
   newTrove: Trove;
 
-  /** Amount of LUSD added to the Trove's debt as borrowing fee. */
+  /** Amount of SAI added to the Trove's debt as borrowing fee. */
   fee: Decimal;
 }
 
@@ -74,32 +74,32 @@ export interface LiquidationDetails {
   /** Total collateral liquidated and debt cleared by the transaction. */
   totalLiquidated: Trove;
 
-  /** Amount of LUSD paid to the liquidator as gas compensation. */
-  lusdGasCompensation: Decimal;
+  /** Amount of SAI paid to the liquidator as gas compensation. */
+  saiGasCompensation: Decimal;
 
   /** Amount of native currency (e.g. Ether) paid to the liquidator as gas compensation. */
   collateralGasCompensation: Decimal;
 }
 
 /**
- * Details of a {@link TransactableFluid.redeemLUSD | redeemLUSD()} transaction.
+ * Details of a {@link TransactableFluid.redeemSAI | redeemSAI()} transaction.
  *
  * @public
  */
 export interface RedemptionDetails {
-  /** Amount of LUSD the redeemer tried to redeem. */
-  attemptedLUSDAmount: Decimal;
+  /** Amount of SAI the redeemer tried to redeem. */
+  attemptedSAIAmount: Decimal;
 
   /**
-   * Amount of LUSD that was actually redeemed by the transaction.
+   * Amount of SAI that was actually redeemed by the transaction.
    *
    * @remarks
-   * This can end up being lower than `attemptedLUSDAmount` due to interference from another
+   * This can end up being lower than `attemptedSAIAmount` due to interference from another
    * transaction that modifies the list of Troves.
    *
    * @public
    */
-  actualLUSDAmount: Decimal;
+  actualSAIAmount: Decimal;
 
   /** Amount of collateral (e.g. Ether) taken from Troves by the transaction. */
   collateralTaken: Decimal;
@@ -116,23 +116,23 @@ export interface RedemptionDetails {
  * @public
  */
 export interface StabilityPoolGainsWithdrawalDetails {
-  /** Amount of LUSD burned from the deposit by liquidations since the last modification. */
-  lusdLoss: Decimal;
+  /** Amount of SAI burned from the deposit by liquidations since the last modification. */
+  saiLoss: Decimal;
 
-  /** Amount of LUSD in the deposit directly after this transaction. */
-  newLUSDDeposit: Decimal;
+  /** Amount of SAI in the deposit directly after this transaction. */
+  newSAIDeposit: Decimal;
 
   /** Amount of native currency (e.g. Ether) paid out to the depositor in this transaction. */
   collateralGain: Decimal;
 
-  /** Amount of LQTY rewarded to the depositor in this transaction. */
-  lqtyReward: Decimal;
+  /** Amount of FLO rewarded to the depositor in this transaction. */
+  floReward: Decimal;
 }
 
 /**
  * Details of a
- * {@link TransactableFluid.depositLUSDInStabilityPool | depositLUSDInStabilityPool()} or
- * {@link TransactableFluid.withdrawLUSDFromStabilityPool | withdrawLUSDFromStabilityPool()}
+ * {@link TransactableFluid.depositSAIInStabilityPool | depositSAIInStabilityPool()} or
+ * {@link TransactableFluid.withdrawSAIFromStabilityPool | withdrawSAIFromStabilityPool()}
  * transaction.
  *
  * @public
@@ -167,7 +167,7 @@ export interface CollateralGainTransferDetails extends StabilityPoolGainsWithdra
  */
 export interface TransactableFluid {
   /**
-   * Open a new Trove by depositing collateral and borrowing LUSD.
+   * Open a new Trove by depositing collateral and borrowing SAI.
    *
    * @param params - How much to deposit and borrow.
    * @param maxBorrowingRate - Maximum acceptable
@@ -199,14 +199,14 @@ export interface TransactableFluid {
    * @param params - Parameters of the adjustment.
    * @param maxBorrowingRate - Maximum acceptable
    *                           {@link @fluid/lib-base#Fees.borrowingRate | borrowing rate} if
-   *                           `params` includes `borrowLUSD`.
+   *                           `params` includes `borrowSAI`.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    *
    * @remarks
    * The transaction will fail if the Trove's debt would fall below
-   * {@link @fluid/lib-base#LUSD_MINIMUM_DEBT}.
+   * {@link @fluid/lib-base#SAI_MINIMUM_DEBT}.
    *
    * If `maxBorrowingRate` is omitted, the current borrowing rate plus 0.5% is used as maximum
    * acceptable rate.
@@ -251,9 +251,9 @@ export interface TransactableFluid {
   withdrawCollateral(amount: Decimalish): Promise<TroveAdjustmentDetails>;
 
   /**
-   * Adjust existing Trove by borrowing more LUSD.
+   * Adjust existing Trove by borrowing more SAI.
    *
-   * @param amount - The amount of LUSD to borrow.
+   * @param amount - The amount of SAI to borrow.
    * @param maxBorrowingRate - Maximum acceptable
    *                           {@link @fluid/lib-base#Fees.borrowingRate | borrowing rate}.
    *
@@ -264,15 +264,15 @@ export interface TransactableFluid {
    * Equivalent to:
    *
    * ```typescript
-   * adjustTrove({ borrowLUSD: amount }, maxBorrowingRate)
+   * adjustTrove({ borrowSAI: amount }, maxBorrowingRate)
    * ```
    */
-  borrowLUSD(amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
+  borrowSAI(amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
 
   /**
    * Adjust existing Trove by repaying some of its debt.
    *
-   * @param amount - The amount of LUSD to repay.
+   * @param amount - The amount of SAI to repay.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -281,10 +281,10 @@ export interface TransactableFluid {
    * Equivalent to:
    *
    * ```typescript
-   * adjustTrove({ repayLUSD: amount })
+   * adjustTrove({ repaySAI: amount })
    * ```
    */
-  repayLUSD(amount: Decimalish): Promise<TroveAdjustmentDetails>;
+  repaySAI(amount: Decimalish): Promise<TroveAdjustmentDetails>;
 
   /** @internal */
   setPrice(price: Decimalish): Promise<void>;
@@ -312,8 +312,8 @@ export interface TransactableFluid {
   /**
    * Make a new Stability Deposit, or top up existing one.
    *
-   * @param amount - Amount of LUSD to add to new or existing deposit.
-   * @param frontendTag - Address that should receive a share of this deposit's LQTY rewards.
+   * @param amount - Amount of SAI to add to new or existing deposit.
+   * @param frontendTag - Address that should receive a share of this deposit's FLO rewards.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -323,17 +323,17 @@ export interface TransactableFluid {
    *
    * As a side-effect, the transaction will also pay out an existing Stability Deposit's
    * {@link @fluid/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#StabilityDeposit.lqtyReward | LQTY reward}.
+   * {@link @fluid/lib-base#StabilityDeposit.floReward | FLO reward}.
    */
-  depositLUSDInStabilityPool(
+  depositSAIInStabilityPool(
     amount: Decimalish,
     frontendTag?: string
   ): Promise<StabilityDepositChangeDetails>;
 
   /**
-   * Withdraw LUSD from Stability Deposit.
+   * Withdraw SAI from Stability Deposit.
    *
-   * @param amount - Amount of LUSD to withdraw.
+   * @param amount - Amount of SAI to withdraw.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -341,13 +341,13 @@ export interface TransactableFluid {
    * @remarks
    * As a side-effect, the transaction will also pay out the Stability Deposit's
    * {@link @fluid/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#StabilityDeposit.lqtyReward | LQTY reward}.
+   * {@link @fluid/lib-base#StabilityDeposit.floReward | FLO reward}.
    */
-  withdrawLUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+  withdrawSAIFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
 
   /**
    * Withdraw {@link @fluid/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#StabilityDeposit.lqtyReward | LQTY reward} from Stability Deposit.
+   * {@link @fluid/lib-base#StabilityDeposit.floReward | FLO reward} from Stability Deposit.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -365,36 +365,36 @@ export interface TransactableFluid {
    * The collateral gain is transfered to the Trove as additional collateral.
    *
    * As a side-effect, the transaction will also pay out the Stability Deposit's
-   * {@link @fluid/lib-base#StabilityDeposit.lqtyReward | LQTY reward}.
+   * {@link @fluid/lib-base#StabilityDeposit.floReward | FLO reward}.
    */
   transferCollateralGainToTrove(): Promise<CollateralGainTransferDetails>;
 
   /**
-   * Send LUSD tokens to an address.
+   * Send SAI tokens to an address.
    *
    * @param toAddress - Address of receipient.
-   * @param amount - Amount of LUSD to send.
+   * @param amount - Amount of SAI to send.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  sendLUSD(toAddress: string, amount: Decimalish): Promise<void>;
+  sendSAI(toAddress: string, amount: Decimalish): Promise<void>;
 
   /**
-   * Send LQTY tokens to an address.
+   * Send FLO tokens to an address.
    *
    * @param toAddress - Address of receipient.
-   * @param amount - Amount of LQTY to send.
+   * @param amount - Amount of FLO to send.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  sendLQTY(toAddress: string, amount: Decimalish): Promise<void>;
+  sendFLO(toAddress: string, amount: Decimalish): Promise<void>;
 
   /**
-   * Redeem LUSD to native currency (e.g. Ether) at face value.
+   * Redeem SAI to native currency (e.g. Ether) at face value.
    *
-   * @param amount - Amount of LUSD to be redeemed.
+   * @param amount - Amount of SAI to be redeemed.
    * @param maxRedemptionRate - Maximum acceptable
    *                            {@link @fluid/lib-base#Fees.redemptionRate | redemption rate}.
    *
@@ -405,7 +405,7 @@ export interface TransactableFluid {
    * If `maxRedemptionRate` is omitted, the current redemption rate (based on `amount`) plus 0.1%
    * is used as maximum acceptable rate.
    */
-  redeemLUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
+  redeemSAI(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
 
   /**
    * Claim leftover collateral after a liquidation or redemption.
@@ -420,38 +420,38 @@ export interface TransactableFluid {
   claimCollateralSurplus(): Promise<void>;
 
   /**
-   * Stake LQTY to start earning fee revenue or increase existing stake.
+   * Stake FLO to start earning fee revenue or increase existing stake.
    *
-   * @param amount - Amount of LQTY to add to new or existing stake.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   *
-   * @remarks
-   * As a side-effect, the transaction will also pay out an existing LQTY stake's
-   * {@link @fluid/lib-base#LQTYStake.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#LQTYStake.lusdGain | LUSD gain}.
-   */
-  stakeLQTY(amount: Decimalish): Promise<void>;
-
-  /**
-   * Withdraw LQTY from staking.
-   *
-   * @param amount - Amount of LQTY to withdraw.
+   * @param amount - Amount of FLO to add to new or existing stake.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    *
    * @remarks
-   * As a side-effect, the transaction will also pay out the LQTY stake's
-   * {@link @fluid/lib-base#LQTYStake.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#LQTYStake.lusdGain | LUSD gain}.
+   * As a side-effect, the transaction will also pay out an existing FLO stake's
+   * {@link @fluid/lib-base#FLOStake.collateralGain | collateral gain} and
+   * {@link @fluid/lib-base#FLOStake.saiGain | SAI gain}.
    */
-  unstakeLQTY(amount: Decimalish): Promise<void>;
+  stakeFLO(amount: Decimalish): Promise<void>;
 
   /**
-   * Withdraw {@link @fluid/lib-base#LQTYStake.collateralGain | collateral gain} and
-   * {@link @fluid/lib-base#LQTYStake.lusdGain | LUSD gain} from LQTY stake.
+   * Withdraw FLO from staking.
+   *
+   * @param amount - Amount of FLO to withdraw.
+   *
+   * @throws
+   * Throws {@link TransactionFailedError} in case of transaction failure.
+   *
+   * @remarks
+   * As a side-effect, the transaction will also pay out the FLO stake's
+   * {@link @fluid/lib-base#FLOStake.collateralGain | collateral gain} and
+   * {@link @fluid/lib-base#FLOStake.saiGain | SAI gain}.
+   */
+  unstakeFLO(amount: Decimalish): Promise<void>;
+
+  /**
+   * Withdraw {@link @fluid/lib-base#FLOStake.collateralGain | collateral gain} and
+   * {@link @fluid/lib-base#FLOStake.saiGain | SAI gain} from FLO stake.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -459,7 +459,7 @@ export interface TransactableFluid {
   withdrawGainsFromStaking(): Promise<void>;
 
   /**
-   * Allow the liquidity mining contract to use Uniswap ETH/LUSD LP tokens for
+   * Allow the liquidity mining contract to use Uniswap ETH/SAI LP tokens for
    * {@link @fluid/lib-base#TransactableFluid.stakeUniTokens | staking}.
    *
    * @param allowance - Maximum amount of LP tokens that will be transferrable to liquidity mining
@@ -475,7 +475,7 @@ export interface TransactableFluid {
   approveUniTokens(allowance?: Decimalish): Promise<void>;
 
   /**
-   * Stake Uniswap ETH/LUSD LP tokens to participate in liquidity mining and earn LQTY.
+   * Stake Uniswap ETH/SAI LP tokens to participate in liquidity mining and earn FLO.
    *
    * @param amount - Amount of LP tokens to add to new or existing stake.
    *
@@ -485,7 +485,7 @@ export interface TransactableFluid {
   stakeUniTokens(amount: Decimalish): Promise<void>;
 
   /**
-   * Withdraw Uniswap ETH/LUSD LP tokens from liquidity mining.
+   * Withdraw Uniswap ETH/SAI LP tokens from liquidity mining.
    *
    * @param amount - Amount of LP tokens to withdraw.
    *
@@ -495,12 +495,12 @@ export interface TransactableFluid {
   unstakeUniTokens(amount: Decimalish): Promise<void>;
 
   /**
-   * Withdraw LQTY that has been earned by mining liquidity.
+   * Withdraw FLO that has been earned by mining liquidity.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  withdrawLQTYRewardFromLiquidityMining(): Promise<void>;
+  withdrawFLORewardFromLiquidityMining(): Promise<void>;
 
   /**
    * Withdraw all staked LP tokens from liquidity mining and claim reward.
@@ -513,7 +513,7 @@ export interface TransactableFluid {
   /**
    * Register current wallet address as a Liquity frontend.
    *
-   * @param kickbackRate - The portion of LQTY rewards to pass onto users of the frontend
+   * @param kickbackRate - The portion of FLO rewards to pass onto users of the frontend
    *                       (between 0 and 1).
    *
    * @throws

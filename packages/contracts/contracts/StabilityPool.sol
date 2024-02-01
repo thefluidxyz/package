@@ -6,28 +6,28 @@ import './Interfaces/IBorrowerOperations.sol';
 import './Interfaces/IStabilityPool.sol';
 import './Interfaces/IBorrowerOperations.sol';
 import './Interfaces/ITroveManager.sol';
-import './Interfaces/ILUSDToken.sol';
+import './Interfaces/ISAIToken.sol';
 import './Interfaces/ISortedTroves.sol';
 import "./Interfaces/ICommunityIssuance.sol";
-import "./Dependencies/LiquityBase.sol";
+import "./Dependencies/FluidBase.sol";
 import "./Dependencies/SafeMath.sol";
-import "./Dependencies/LiquitySafeMath128.sol";
+import "./Dependencies/FluidSafeMath128.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
 /*
- * The Stability Pool holds LUSD tokens deposited by Stability Pool depositors.
+ * The Stability Pool holds SAI tokens deposited by Stability Pool depositors.
  *
- * When a trove is liquidated, then depending on system conditions, some of its LUSD debt gets offset with
- * LUSD in the Stability Pool:  that is, the offset debt evaporates, and an equal amount of LUSD tokens in the Stability Pool is burned.
+ * When a trove is liquidated, then depending on system conditions, some of its SAI debt gets offset with
+ * SAI in the Stability Pool:  that is, the offset debt evaporates, and an equal amount of SAI tokens in the Stability Pool is burned.
  *
- * Thus, a liquidation causes each depositor to receive a LUSD loss, in proportion to their deposit as a share of total deposits.
- * They also receive an ETH gain, as the ETH collateral of the liquidated trove is distributed among Stability depositors,
+ * Thus, a liquidation causes each depositor to receive a SAI loss, in proportion to their deposit as a share of total deposits.
+ * They also receive an SEI gain, as the SEI collateral of the liquidated trove is distributed among Stability depositors,
  * in the same proportion.
  *
  * When a liquidation occurs, it depletes every deposit by the same fraction: for example, a liquidation that depletes 40%
- * of the total LUSD in the Stability Pool, depletes 40% of each deposit.
+ * of the total SAI in the Stability Pool, depletes 40% of each deposit.
  *
  * A deposit that has experienced a series of liquidations is termed a "compounded deposit": each liquidation depletes the deposit,
  * multiplying it by some factor in range ]0,1[
@@ -35,25 +35,25 @@ import "./Dependencies/console.sol";
  *
  * --- IMPLEMENTATION ---
  *
- * We use a highly scalable method of tracking deposits and ETH gains that has O(1) complexity.
+ * We use a highly scalable method of tracking deposits and SEI gains that has O(1) complexity.
  *
- * When a liquidation occurs, rather than updating each depositor's deposit and ETH gain, we simply update two state variables:
+ * When a liquidation occurs, rather than updating each depositor's deposit and SEI gain, we simply update two state variables:
  * a product P, and a sum S.
  *
  * A mathematical manipulation allows us to factor out the initial deposit, and accurately track all depositors' compounded deposits
- * and accumulated ETH gains over time, as liquidations occur, using just these two variables P and S. When depositors join the
+ * and accumulated SEI gains over time, as liquidations occur, using just these two variables P and S. When depositors join the
  * Stability Pool, they get a snapshot of the latest P and S: P_t and S_t, respectively.
  *
- * The formula for a depositor's accumulated ETH gain is derived here:
- * https://github.com/liquity/dev/blob/main/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
+ * The formula for a depositor's accumulated SEI gain is derived here:
+ * https://github.com/fluid/dev/blob/main/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
  *
  * For a given deposit d_t, the ratio P/P_t tells us the factor by which a deposit has decreased since it joined the Stability Pool,
- * and the term d_t * (S - S_t)/P_t gives us the deposit's total accumulated ETH gain.
+ * and the term d_t * (S - S_t)/P_t gives us the deposit's total accumulated SEI gain.
  *
- * Each liquidation updates the product P and sum S. After a series of liquidations, a compounded deposit and corresponding ETH gain
+ * Each liquidation updates the product P and sum S. After a series of liquidations, a compounded deposit and corresponding SEI gain
  * can be calculated using the initial deposit, the depositor’s snapshots of P and S, and the latest values of P and S.
  *
- * Any time a depositor updates their deposit (withdrawal, top-up) their accumulated ETH gain is paid out, their new deposit is recorded
+ * Any time a depositor updates their deposit (withdrawal, top-up) their accumulated SEI gain is paid out, their new deposit is recorded
  * (based on their latest compounded deposit and modified by the withdrawal/top-up), and they receive new snapshots of the latest P and S.
  * Essentially, they make a fresh deposit that overwrites the old one.
  *
@@ -89,16 +89,16 @@ import "./Dependencies/console.sol";
  *
  * Otherwise, we then compare the current scale to the deposit's scale snapshot. If they're equal, the compounded deposit is given by d_t * P/P_t.
  * If it spans one scale change, it is given by d_t * P/(P_t * 1e9). If it spans more than one scale change, we define the compounded deposit
- * as 0, since it is now less than 1e-9'th of its initial value (e.g. a deposit of 1 billion LUSD has depleted to < 1 LUSD).
+ * as 0, since it is now less than 1e-9'th of its initial value (e.g. a deposit of 1 billion SAI has depleted to < 1 SAI).
  *
  *
- *  --- TRACKING DEPOSITOR'S ETH GAIN OVER SCALE CHANGES AND EPOCHS ---
+ *  --- TRACKING DEPOSITOR'S SEI GAIN OVER SCALE CHANGES AND EPOCHS ---
  *
  * In the current epoch, the latest value of S is stored upon each scale change, and the mapping (scale -> S) is stored for each epoch.
  *
- * This allows us to calculate a deposit's accumulated ETH gain, during the epoch in which the deposit was non-zero and earned ETH.
+ * This allows us to calculate a deposit's accumulated SEI gain, during the epoch in which the deposit was non-zero and earned SEI.
  *
- * We calculate the depositor's accumulated ETH gain for the scale at which they made the deposit, using the ETH gain formula:
+ * We calculate the depositor's accumulated SEI gain for the scale at which they made the deposit, using the SEI gain formula:
  * e_1 = d_t * (S - S_t) / P_t
  *
  * and also for scale after, taking care to divide the latter by a factor of 1e9:
@@ -118,35 +118,35 @@ import "./Dependencies/console.sol";
  *  |---+---------|-------------|-----...
  *         i            i+1
  *
- * The sum of (e_1 + e_2) captures the depositor's total accumulated ETH gain, handling the case where their
+ * The sum of (e_1 + e_2) captures the depositor's total accumulated SEI gain, handling the case where their
  * deposit spanned one scale change. We only care about gains across one scale change, since the compounded
  * deposit is defined as being 0 once it has spanned more than one scale change.
  *
  *
  * --- UPDATING P WHEN A LIQUIDATION OCCURS ---
  *
- * Please see the implementation spec in the proof document, which closely follows on from the compounded deposit / ETH gain derivations:
- * https://github.com/liquity/liquity/blob/master/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
+ * Please see the implementation spec in the proof document, which closely follows on from the compounded deposit / SEI gain derivations:
+ * https://github.com/fluid/fluid/blob/master/papers/Scalable_Reward_Distribution_with_Compounding_Stakes.pdf
  *
  *
- * --- LQTY ISSUANCE TO STABILITY POOL DEPOSITORS ---
+ * --- FLO ISSUANCE TO STABILITY POOL DEPOSITORS ---
  *
- * An LQTY issuance event occurs at every deposit operation, and every liquidation.
+ * An FLO issuance event occurs at every deposit operation, and every liquidation.
  *
  * Each deposit is tagged with the address of the front end through which it was made.
  *
- * All deposits earn a share of the issued LQTY in proportion to the deposit as a share of total deposits. The LQTY earned
+ * All deposits earn a share of the issued FLO in proportion to the deposit as a share of total deposits. The FLO earned
  * by a given deposit, is split between the depositor and the front end through which the deposit was made, based on the front end's kickbackRate.
  *
  * Please see the system Readme for an overview:
- * https://github.com/liquity/dev/blob/main/README.md#lqty-issuance-to-stability-providers
+ * https://github.com/fluid/dev/blob/main/README.md#flo-issuance-to-stability-providers
  *
- * We use the same mathematical product-sum approach to track LQTY gains for depositors, where 'G' is the sum corresponding to LQTY gains.
+ * We use the same mathematical product-sum approach to track FLO gains for depositors, where 'G' is the sum corresponding to FLO gains.
  * The product P (and snapshot P_t) is re-used, as the ratio P/P_t tracks a deposit's depletion due to liquidations.
  *
  */
-contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
-    using LiquitySafeMath128 for uint128;
+contract StabilityPool is FluidBase, Ownable, CheckContract, IStabilityPool {
+    using FluidSafeMath128 for uint128;
 
     string constant public NAME = "StabilityPool";
 
@@ -154,17 +154,17 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
     ITroveManager public troveManager;
 
-    ILUSDToken public lusdToken;
+    ISAIToken public saiToken;
 
     // Needed to check if there are pending liquidations
     ISortedTroves public sortedTroves;
 
     ICommunityIssuance public communityIssuance;
 
-    uint256 internal ETH;  // deposited ether tracker
+    uint256 internal SEI;  // deposited sei tracker
 
-    // Tracker for LUSD held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
-    uint256 internal totalLUSDDeposits;
+    // Tracker for SAI held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
+    uint256 internal totalSAIDeposits;
 
    // --- Data structures ---
 
@@ -194,7 +194,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     mapping (address => Snapshots) public frontEndSnapshots; // front end address -> snapshots struct
 
     /*  Product 'P': Running product by which to multiply an initial deposit, in order to find the current compounded deposit,
-    * after a series of liquidations have occurred, each of which cancel some LUSD debt with the deposit.
+    * after a series of liquidations have occurred, each of which cancel some SAI debt with the deposit.
     *
     * During its lifetime, a deposit's value evolves from d_t to d_t * P / P_t , where P_t
     * is the snapshot of P taken at the instant the deposit was made. 18-digit decimal.
@@ -209,7 +209,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     // With each offset that fully empties the Pool, the epoch is incremented by 1
     uint128 public currentEpoch;
 
-    /* ETH Gain sum 'S': During its lifetime, each deposit d_t earns an ETH gain of ( d_t * [S - S_t] )/P_t, where S_t
+    /* SEI Gain sum 'S': During its lifetime, each deposit d_t earns an SEI gain of ( d_t * [S - S_t] )/P_t, where S_t
     * is the depositor's snapshot of S taken at the time t when the deposit was made.
     *
     * The 'S' sums are stored in a nested mapping (epoch => scale => sum):
@@ -220,30 +220,30 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     mapping (uint128 => mapping(uint128 => uint)) public epochToScaleToSum;
 
     /*
-    * Similarly, the sum 'G' is used to calculate LQTY gains. During it's lifetime, each deposit d_t earns a LQTY gain of
+    * Similarly, the sum 'G' is used to calculate FLO gains. During it's lifetime, each deposit d_t earns a FLO gain of
     *  ( d_t * [G - G_t] )/P_t, where G_t is the depositor's snapshot of G taken at time t when  the deposit was made.
     *
-    *  LQTY reward events occur are triggered by depositor operations (new deposit, topup, withdrawal), and liquidations.
-    *  In each case, the LQTY reward is issued (i.e. G is updated), before other state changes are made.
+    *  FLO reward events occur are triggered by depositor operations (new deposit, topup, withdrawal), and liquidations.
+    *  In each case, the FLO reward is issued (i.e. G is updated), before other state changes are made.
     */
     mapping (uint128 => mapping(uint128 => uint)) public epochToScaleToG;
 
-    // Error tracker for the error correction in the LQTY issuance calculation
-    uint public lastLQTYError;
+    // Error tracker for the error correction in the FLO issuance calculation
+    uint public lastFLOError;
     // Error trackers for the error correction in the offset calculation
-    uint public lastETHError_Offset;
-    uint public lastLUSDLossError_Offset;
+    uint public lastSEIError_Offset;
+    uint public lastSAILossError_Offset;
 
     // --- Events ---
 
-    event StabilityPoolETHBalanceUpdated(uint _newBalance);
-    event StabilityPoolLUSDBalanceUpdated(uint _newBalance);
+    event StabilityPoolSEIBalanceUpdated(uint _newBalance);
+    event StabilityPoolSAIBalanceUpdated(uint _newBalance);
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event ActivePoolAddressChanged(address _newActivePoolAddress);
     event DefaultPoolAddressChanged(address _newDefaultPoolAddress);
-    event LUSDTokenAddressChanged(address _newLUSDTokenAddress);
+    event SAITokenAddressChanged(address _newSAITokenAddress);
     event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
     event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
@@ -262,10 +262,10 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     event UserDepositChanged(address indexed _depositor, uint _newDeposit);
     event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
 
-    event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _LUSDLoss);
-    event LQTYPaidToDepositor(address indexed _depositor, uint _LQTY);
-    event LQTYPaidToFrontEnd(address indexed _frontEnd, uint _LQTY);
-    event EtherSent(address _to, uint _amount);
+    event SEIGainWithdrawn(address indexed _depositor, uint _SEI, uint _SAILoss);
+    event FLOPaidToDepositor(address indexed _depositor, uint _FLO);
+    event FLOPaidToFrontEnd(address indexed _frontEnd, uint _FLO);
+    event SeiSent(address _to, uint _amount);
 
     // --- Contract setters ---
 
@@ -273,7 +273,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _activePoolAddress,
-        address _lusdTokenAddress,
+        address _saiTokenAddress,
         address _sortedTrovesAddress,
         address _priceFeedAddress,
         address _communityIssuanceAddress
@@ -285,7 +285,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
-        checkContract(_lusdTokenAddress);
+        checkContract(_saiTokenAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
@@ -293,7 +293,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);
-        lusdToken = ILUSDToken(_lusdTokenAddress);
+        saiToken = ISAIToken(_saiTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         priceFeed = IPriceFeed(_priceFeedAddress);
         communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
@@ -301,7 +301,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
-        emit LUSDTokenAddressChanged(_lusdTokenAddress);
+        emit SAITokenAddressChanged(_saiTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
@@ -311,22 +311,22 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
     // --- Getters for public variables. Required by IPool interface ---
 
-    function getETH() external view override returns (uint) {
-        return ETH;
+    function getSEI() external view override returns (uint) {
+        return SEI;
     }
 
-    function getTotalLUSDDeposits() external view override returns (uint) {
-        return totalLUSDDeposits;
+    function getTotalSAIDeposits() external view override returns (uint) {
+        return totalSAIDeposits;
     }
 
     // --- External Depositor Functions ---
 
     /*  provideToSP():
     *
-    * - Triggers a LQTY issuance, based on time passed since the last issuance. The LQTY issuance is shared between *all* depositors and front ends
+    * - Triggers a FLO issuance, based on time passed since the last issuance. The FLO issuance is shared between *all* depositors and front ends
     * - Tags the deposit with the provided front end tag param, if it's a new deposit
-    * - Sends depositor's accumulated gains (LQTY, ETH) to depositor
-    * - Sends the tagged front end's accumulated LQTY gains to the tagged front end
+    * - Sends depositor's accumulated gains (FLO, SEI) to depositor
+    * - Sends the tagged front end's accumulated FLO gains to the tagged front end
     * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
     */
     function provideToSP(uint _amount, address _frontEndTag) external override {
@@ -338,16 +338,16 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
 
-        _triggerLQTYIssuance(communityIssuanceCached);
+        _triggerFLOIssuance(communityIssuanceCached);
 
         if (initialDeposit == 0) {_setFrontEndTag(msg.sender, _frontEndTag);}
-        uint depositorETHGain = getDepositorETHGain(msg.sender);
-        uint compoundedLUSDDeposit = getCompoundedLUSDDeposit(msg.sender);
-        uint LUSDLoss = initialDeposit.sub(compoundedLUSDDeposit); // Needed only for event log
+        uint depositorSEIGain = getDepositorSEIGain(msg.sender);
+        uint compoundedSAIDeposit = getCompoundedSAIDeposit(msg.sender);
+        uint SAILoss = initialDeposit.sub(compoundedSAIDeposit); // Needed only for event log
 
-        // First pay out any LQTY gains
+        // First pay out any FLO gains
         address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutLQTYGains(communityIssuanceCached, msg.sender, frontEnd);
+        _payOutFLOGains(communityIssuanceCached, msg.sender, frontEnd);
 
         // Update front end stake
         uint compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
@@ -355,23 +355,23 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
         emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
 
-        _sendLUSDtoStabilityPool(msg.sender, _amount);
+        _sendSAItoStabilityPool(msg.sender, _amount);
 
-        uint newDeposit = compoundedLUSDDeposit.add(_amount);
+        uint newDeposit = compoundedSAIDeposit.add(_amount);
         _updateDepositAndSnapshots(msg.sender, newDeposit);
         emit UserDepositChanged(msg.sender, newDeposit);
 
-        emit ETHGainWithdrawn(msg.sender, depositorETHGain, LUSDLoss); // LUSD Loss required for event log
+        emit SEIGainWithdrawn(msg.sender, depositorSEIGain, SAILoss); // SAI Loss required for event log
 
-        _sendETHGainToDepositor(depositorETHGain);
+        _sendSEIGainToDepositor(depositorSEIGain);
      }
 
     /*  withdrawFromSP():
     *
-    * - Triggers a LQTY issuance, based on time passed since the last issuance. The LQTY issuance is shared between *all* depositors and front ends
+    * - Triggers a FLO issuance, based on time passed since the last issuance. The FLO issuance is shared between *all* depositors and front ends
     * - Removes the deposit's front end tag if it is a full withdrawal
-    * - Sends all depositor's accumulated gains (LQTY, ETH) to depositor
-    * - Sends the tagged front end's accumulated LQTY gains to the tagged front end
+    * - Sends all depositor's accumulated gains (FLO, SEI) to depositor
+    * - Sends the tagged front end's accumulated FLO gains to the tagged front end
     * - Decreases deposit and tagged front end's stake, and takes new snapshots for each.
     *
     * If _amount > userDeposit, the user withdraws all of their compounded deposit.
@@ -383,61 +383,61 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
 
-        _triggerLQTYIssuance(communityIssuanceCached);
+        _triggerFLOIssuance(communityIssuanceCached);
 
-        uint depositorETHGain = getDepositorETHGain(msg.sender);
+        uint depositorSEIGain = getDepositorSEIGain(msg.sender);
 
-        uint compoundedLUSDDeposit = getCompoundedLUSDDeposit(msg.sender);
-        uint LUSDtoWithdraw = LiquityMath._min(_amount, compoundedLUSDDeposit);
-        uint LUSDLoss = initialDeposit.sub(compoundedLUSDDeposit); // Needed only for event log
+        uint compoundedSAIDeposit = getCompoundedSAIDeposit(msg.sender);
+        uint SAItoWithdraw = FluidMath._min(_amount, compoundedSAIDeposit);
+        uint SAILoss = initialDeposit.sub(compoundedSAIDeposit); // Needed only for event log
 
-        // First pay out any LQTY gains
+        // First pay out any FLO gains
         address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutLQTYGains(communityIssuanceCached, msg.sender, frontEnd);
+        _payOutFLOGains(communityIssuanceCached, msg.sender, frontEnd);
         
         // Update front end stake
         uint compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
-        uint newFrontEndStake = compoundedFrontEndStake.sub(LUSDtoWithdraw);
+        uint newFrontEndStake = compoundedFrontEndStake.sub(SAItoWithdraw);
         _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
         emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
 
-        _sendLUSDToDepositor(msg.sender, LUSDtoWithdraw);
+        _sendSAIToDepositor(msg.sender, SAItoWithdraw);
 
         // Update deposit
-        uint newDeposit = compoundedLUSDDeposit.sub(LUSDtoWithdraw);
+        uint newDeposit = compoundedSAIDeposit.sub(SAItoWithdraw);
         _updateDepositAndSnapshots(msg.sender, newDeposit);
         emit UserDepositChanged(msg.sender, newDeposit);
 
-        emit ETHGainWithdrawn(msg.sender, depositorETHGain, LUSDLoss);  // LUSD Loss required for event log
+        emit SEIGainWithdrawn(msg.sender, depositorSEIGain, SAILoss);  // SAI Loss required for event log
 
-        _sendETHGainToDepositor(depositorETHGain);
+        _sendSEIGainToDepositor(depositorSEIGain);
     }
 
-    /* withdrawETHGainToTrove:
-    * - Triggers a LQTY issuance, based on time passed since the last issuance. The LQTY issuance is shared between *all* depositors and front ends
-    * - Sends all depositor's LQTY gain to  depositor
-    * - Sends all tagged front end's LQTY gain to the tagged front end
-    * - Transfers the depositor's entire ETH gain from the Stability Pool to the caller's trove
+    /* withdrawSEIGainToTrove:
+    * - Triggers a FLO issuance, based on time passed since the last issuance. The FLO issuance is shared between *all* depositors and front ends
+    * - Sends all depositor's FLO gain to  depositor
+    * - Sends all tagged front end's FLO gain to the tagged front end
+    * - Transfers the depositor's entire SEI gain from the Stability Pool to the caller's trove
     * - Leaves their compounded deposit in the Stability Pool
     * - Updates snapshots for deposit and tagged front end stake */
-    function withdrawETHGainToTrove(address _upperHint, address _lowerHint) external override {
+    function withdrawSEIGainToTrove(address _upperHint, address _lowerHint) external override {
         uint initialDeposit = deposits[msg.sender].initialValue;
         _requireUserHasDeposit(initialDeposit);
         _requireUserHasTrove(msg.sender);
-        _requireUserHasETHGain(msg.sender);
+        _requireUserHasSEIGain(msg.sender);
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
 
-        _triggerLQTYIssuance(communityIssuanceCached);
+        _triggerFLOIssuance(communityIssuanceCached);
 
-        uint depositorETHGain = getDepositorETHGain(msg.sender);
+        uint depositorSEIGain = getDepositorSEIGain(msg.sender);
 
-        uint compoundedLUSDDeposit = getCompoundedLUSDDeposit(msg.sender);
-        uint LUSDLoss = initialDeposit.sub(compoundedLUSDDeposit); // Needed only for event log
+        uint compoundedSAIDeposit = getCompoundedSAIDeposit(msg.sender);
+        uint SAILoss = initialDeposit.sub(compoundedSAIDeposit); // Needed only for event log
 
-        // First pay out any LQTY gains
+        // First pay out any FLO gains
         address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutLQTYGains(communityIssuanceCached, msg.sender, frontEnd);
+        _payOutFLOGains(communityIssuanceCached, msg.sender, frontEnd);
 
         // Update front end stake
         uint compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
@@ -445,49 +445,49 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
         emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
 
-        _updateDepositAndSnapshots(msg.sender, compoundedLUSDDeposit);
+        _updateDepositAndSnapshots(msg.sender, compoundedSAIDeposit);
 
-        /* Emit events before transferring ETH gain to Trove.
-         This lets the event log make more sense (i.e. so it appears that first the ETH gain is withdrawn
+        /* Emit events before transferring SEI gain to Trove.
+         This lets the event log make more sense (i.e. so it appears that first the SEI gain is withdrawn
         and then it is deposited into the Trove, not the other way around). */
-        emit ETHGainWithdrawn(msg.sender, depositorETHGain, LUSDLoss);
-        emit UserDepositChanged(msg.sender, compoundedLUSDDeposit);
+        emit SEIGainWithdrawn(msg.sender, depositorSEIGain, SAILoss);
+        emit UserDepositChanged(msg.sender, compoundedSAIDeposit);
 
-        ETH = ETH.sub(depositorETHGain);
-        emit StabilityPoolETHBalanceUpdated(ETH);
-        emit EtherSent(msg.sender, depositorETHGain);
+        SEI = SEI.sub(depositorSEIGain);
+        emit StabilityPoolSEIBalanceUpdated(SEI);
+        emit SeiSent(msg.sender, depositorSEIGain);
 
-        borrowerOperations.moveETHGainToTrove{ value: depositorETHGain }(msg.sender, _upperHint, _lowerHint);
+        borrowerOperations.moveSEIGainToTrove{ value: depositorSEIGain }(msg.sender, _upperHint, _lowerHint);
     }
 
-    // --- LQTY issuance functions ---
+    // --- FLO issuance functions ---
 
-    function _triggerLQTYIssuance(ICommunityIssuance _communityIssuance) internal {
-        uint LQTYIssuance = _communityIssuance.issueLQTY();
-       _updateG(LQTYIssuance);
+    function _triggerFLOIssuance(ICommunityIssuance _communityIssuance) internal {
+        uint FLOIssuance = _communityIssuance.issueFLO();
+       _updateG(FLOIssuance);
     }
 
-    function _updateG(uint _LQTYIssuance) internal {
-        uint totalLUSD = totalLUSDDeposits; // cached to save an SLOAD
+    function _updateG(uint _FLOIssuance) internal {
+        uint totalSAI = totalSAIDeposits; // cached to save an SLOAD
         /*
-        * When total deposits is 0, G is not updated. In this case, the LQTY issued can not be obtained by later
+        * When total deposits is 0, G is not updated. In this case, the FLO issued can not be obtained by later
         * depositors - it is missed out on, and remains in the balanceof the CommunityIssuance contract.
         *
         */
-        if (totalLUSD == 0 || _LQTYIssuance == 0) {return;}
+        if (totalSAI == 0 || _FLOIssuance == 0) {return;}
 
-        uint LQTYPerUnitStaked;
-        LQTYPerUnitStaked =_computeLQTYPerUnitStaked(_LQTYIssuance, totalLUSD);
+        uint FLOPerUnitStaked;
+        FLOPerUnitStaked =_computeFLOPerUnitStaked(_FLOIssuance, totalSAI);
 
-        uint marginalLQTYGain = LQTYPerUnitStaked.mul(P);
-        epochToScaleToG[currentEpoch][currentScale] = epochToScaleToG[currentEpoch][currentScale].add(marginalLQTYGain);
+        uint marginalFLOGain = FLOPerUnitStaked.mul(P);
+        epochToScaleToG[currentEpoch][currentScale] = epochToScaleToG[currentEpoch][currentScale].add(marginalFLOGain);
 
         emit G_Updated(epochToScaleToG[currentEpoch][currentScale], currentEpoch, currentScale);
     }
 
-    function _computeLQTYPerUnitStaked(uint _LQTYIssuance, uint _totalLUSDDeposits) internal returns (uint) {
+    function _computeFLOPerUnitStaked(uint _FLOIssuance, uint _totalSAIDeposits) internal returns (uint) {
         /*  
-        * Calculate the LQTY-per-unit staked.  Division uses a "feedback" error correction, to keep the 
+        * Calculate the FLO-per-unit staked.  Division uses a "feedback" error correction, to keep the 
         * cumulative error low in the running total G:
         *
         * 1) Form a numerator which compensates for the floor division error that occurred the last time this 
@@ -497,32 +497,32 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         * 4) Store this error for use in the next correction when this function is called.
         * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
         */
-        uint LQTYNumerator = _LQTYIssuance.mul(DECIMAL_PRECISION).add(lastLQTYError);
+        uint FLONumerator = _FLOIssuance.mul(DECIMAL_PRECISION).add(lastFLOError);
 
-        uint LQTYPerUnitStaked = LQTYNumerator.div(_totalLUSDDeposits);
-        lastLQTYError = LQTYNumerator.sub(LQTYPerUnitStaked.mul(_totalLUSDDeposits));
+        uint FLOPerUnitStaked = FLONumerator.div(_totalSAIDeposits);
+        lastFLOError = FLONumerator.sub(FLOPerUnitStaked.mul(_totalSAIDeposits));
 
-        return LQTYPerUnitStaked;
+        return FLOPerUnitStaked;
     }
 
     // --- Liquidation functions ---
 
     /*
-    * Cancels out the specified debt against the LUSD contained in the Stability Pool (as far as possible)
-    * and transfers the Trove's ETH collateral from ActivePool to StabilityPool.
+    * Cancels out the specified debt against the SAI contained in the Stability Pool (as far as possible)
+    * and transfers the Trove's SEI collateral from ActivePool to StabilityPool.
     * Only called by liquidation functions in the TroveManager.
     */
     function offset(uint _debtToOffset, uint _collToAdd) external override {
         _requireCallerIsTroveManager();
-        uint totalLUSD = totalLUSDDeposits; // cached to save an SLOAD
-        if (totalLUSD == 0 || _debtToOffset == 0) { return; }
+        uint totalSAI = totalSAIDeposits; // cached to save an SLOAD
+        if (totalSAI == 0 || _debtToOffset == 0) { return; }
 
-        _triggerLQTYIssuance(communityIssuance);
+        _triggerFLOIssuance(communityIssuance);
 
-        (uint ETHGainPerUnitStaked,
-            uint LUSDLossPerUnitStaked) = _computeRewardsPerUnitStaked(_collToAdd, _debtToOffset, totalLUSD);
+        (uint SEIGainPerUnitStaked,
+            uint SAILossPerUnitStaked) = _computeRewardsPerUnitStaked(_collToAdd, _debtToOffset, totalSAI);
 
-        _updateRewardSumAndProduct(ETHGainPerUnitStaked, LUSDLossPerUnitStaked);  // updates S and P
+        _updateRewardSumAndProduct(SEIGainPerUnitStaked, SAILossPerUnitStaked);  // updates S and P
 
         _moveOffsetCollAndDebt(_collToAdd, _debtToOffset);
     }
@@ -532,13 +532,13 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     function _computeRewardsPerUnitStaked(
         uint _collToAdd,
         uint _debtToOffset,
-        uint _totalLUSDDeposits
+        uint _totalSAIDeposits
     )
         internal
-        returns (uint ETHGainPerUnitStaked, uint LUSDLossPerUnitStaked)
+        returns (uint SEIGainPerUnitStaked, uint SAILossPerUnitStaked)
     {
         /*
-        * Compute the LUSD and ETH rewards. Uses a "feedback" error correction, to keep
+        * Compute the SAI and SEI rewards. Uses a "feedback" error correction, to keep
         * the cumulative error in the P and S state variables low:
         *
         * 1) Form numerators which compensate for the floor division errors that occurred the last time this 
@@ -548,39 +548,39 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         * 4) Store these errors for use in the next correction when this function is called.
         * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
         */
-        uint ETHNumerator = _collToAdd.mul(DECIMAL_PRECISION).add(lastETHError_Offset);
+        uint SEINumerator = _collToAdd.mul(DECIMAL_PRECISION).add(lastSEIError_Offset);
 
-        assert(_debtToOffset <= _totalLUSDDeposits);
-        if (_debtToOffset == _totalLUSDDeposits) {
-            LUSDLossPerUnitStaked = DECIMAL_PRECISION;  // When the Pool depletes to 0, so does each deposit 
-            lastLUSDLossError_Offset = 0;
+        assert(_debtToOffset <= _totalSAIDeposits);
+        if (_debtToOffset == _totalSAIDeposits) {
+            SAILossPerUnitStaked = DECIMAL_PRECISION;  // When the Pool depletes to 0, so does each deposit 
+            lastSAILossError_Offset = 0;
         } else {
-            uint LUSDLossNumerator = _debtToOffset.mul(DECIMAL_PRECISION).sub(lastLUSDLossError_Offset);
+            uint SAILossNumerator = _debtToOffset.mul(DECIMAL_PRECISION).sub(lastSAILossError_Offset);
             /*
-            * Add 1 to make error in quotient positive. We want "slightly too much" LUSD loss,
-            * which ensures the error in any given compoundedLUSDDeposit favors the Stability Pool.
+            * Add 1 to make error in quotient positive. We want "slightly too much" SAI loss,
+            * which ensures the error in any given compoundedSAIDeposit favors the Stability Pool.
             */
-            LUSDLossPerUnitStaked = (LUSDLossNumerator.div(_totalLUSDDeposits)).add(1);
-            lastLUSDLossError_Offset = (LUSDLossPerUnitStaked.mul(_totalLUSDDeposits)).sub(LUSDLossNumerator);
+            SAILossPerUnitStaked = (SAILossNumerator.div(_totalSAIDeposits)).add(1);
+            lastSAILossError_Offset = (SAILossPerUnitStaked.mul(_totalSAIDeposits)).sub(SAILossNumerator);
         }
 
-        ETHGainPerUnitStaked = ETHNumerator.div(_totalLUSDDeposits);
-        lastETHError_Offset = ETHNumerator.sub(ETHGainPerUnitStaked.mul(_totalLUSDDeposits));
+        SEIGainPerUnitStaked = SEINumerator.div(_totalSAIDeposits);
+        lastSEIError_Offset = SEINumerator.sub(SEIGainPerUnitStaked.mul(_totalSAIDeposits));
 
-        return (ETHGainPerUnitStaked, LUSDLossPerUnitStaked);
+        return (SEIGainPerUnitStaked, SAILossPerUnitStaked);
     }
 
     // Update the Stability Pool reward sum S and product P
-    function _updateRewardSumAndProduct(uint _ETHGainPerUnitStaked, uint _LUSDLossPerUnitStaked) internal {
+    function _updateRewardSumAndProduct(uint _SEIGainPerUnitStaked, uint _SAILossPerUnitStaked) internal {
         uint currentP = P;
         uint newP;
 
-        assert(_LUSDLossPerUnitStaked <= DECIMAL_PRECISION);
+        assert(_SAILossPerUnitStaked <= DECIMAL_PRECISION);
         /*
-        * The newProductFactor is the factor by which to change all deposits, due to the depletion of Stability Pool LUSD in the liquidation.
-        * We make the product factor 0 if there was a pool-emptying. Otherwise, it is (1 - LUSDLossPerUnitStaked)
+        * The newProductFactor is the factor by which to change all deposits, due to the depletion of Stability Pool SAI in the liquidation.
+        * We make the product factor 0 if there was a pool-emptying. Otherwise, it is (1 - SAILossPerUnitStaked)
         */
-        uint newProductFactor = uint(DECIMAL_PRECISION).sub(_LUSDLossPerUnitStaked);
+        uint newProductFactor = uint(DECIMAL_PRECISION).sub(_SAILossPerUnitStaked);
 
         uint128 currentScaleCached = currentScale;
         uint128 currentEpochCached = currentEpoch;
@@ -588,13 +588,13 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         /*
         * Calculate the new S first, before we update P.
-        * The ETH gain for any given depositor from a liquidation depends on the value of their deposit
+        * The SEI gain for any given depositor from a liquidation depends on the value of their deposit
         * (and the value of totalDeposits) prior to the Stability being depleted by the debt in the liquidation.
         *
-        * Since S corresponds to ETH gain, and P to deposit loss, we update S first.
+        * Since S corresponds to SEI gain, and P to deposit loss, we update S first.
         */
-        uint marginalETHGain = _ETHGainPerUnitStaked.mul(currentP);
-        uint newS = currentS.add(marginalETHGain);
+        uint marginalSEIGain = _SEIGainPerUnitStaked.mul(currentP);
+        uint newS = currentS.add(marginalSEIGain);
         epochToScaleToSum[currentEpochCached][currentScaleCached] = newS;
         emit S_Updated(newS, currentEpochCached, currentScaleCached);
 
@@ -624,44 +624,44 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     function _moveOffsetCollAndDebt(uint _collToAdd, uint _debtToOffset) internal {
         IActivePool activePoolCached = activePool;
 
-        // Cancel the liquidated LUSD debt with the LUSD in the stability pool
-        activePoolCached.decreaseLUSDDebt(_debtToOffset);
-        _decreaseLUSD(_debtToOffset);
+        // Cancel the liquidated SAI debt with the SAI in the stability pool
+        activePoolCached.decreaseSAIDebt(_debtToOffset);
+        _decreaseSAI(_debtToOffset);
 
         // Burn the debt that was successfully offset
-        lusdToken.burn(address(this), _debtToOffset);
+        saiToken.burn(address(this), _debtToOffset);
 
-        activePoolCached.sendETH(address(this), _collToAdd);
+        activePoolCached.sendSEI(address(this), _collToAdd);
     }
 
-    function _decreaseLUSD(uint _amount) internal {
-        uint newTotalLUSDDeposits = totalLUSDDeposits.sub(_amount);
-        totalLUSDDeposits = newTotalLUSDDeposits;
-        emit StabilityPoolLUSDBalanceUpdated(newTotalLUSDDeposits);
+    function _decreaseSAI(uint _amount) internal {
+        uint newTotalSAIDeposits = totalSAIDeposits.sub(_amount);
+        totalSAIDeposits = newTotalSAIDeposits;
+        emit StabilityPoolSAIBalanceUpdated(newTotalSAIDeposits);
     }
 
     // --- Reward calculator functions for depositor and front end ---
 
-    /* Calculates the ETH gain earned by the deposit since its last snapshots were taken.
+    /* Calculates the SEI gain earned by the deposit since its last snapshots were taken.
     * Given by the formula:  E = d0 * (S - S(0))/P(0)
     * where S(0) and P(0) are the depositor's snapshots of the sum S and product P, respectively.
     * d0 is the last recorded deposit value.
     */
-    function getDepositorETHGain(address _depositor) public view override returns (uint) {
+    function getDepositorSEIGain(address _depositor) public view override returns (uint) {
         uint initialDeposit = deposits[_depositor].initialValue;
 
         if (initialDeposit == 0) { return 0; }
 
         Snapshots memory snapshots = depositSnapshots[_depositor];
 
-        uint ETHGain = _getETHGainFromSnapshots(initialDeposit, snapshots);
-        return ETHGain;
+        uint SEIGain = _getSEIGainFromSnapshots(initialDeposit, snapshots);
+        return SEIGain;
     }
 
-    function _getETHGainFromSnapshots(uint initialDeposit, Snapshots memory snapshots) internal view returns (uint) {
+    function _getSEIGainFromSnapshots(uint initialDeposit, Snapshots memory snapshots) internal view returns (uint) {
         /*
-        * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
-        * If it does, the second portion of the ETH gain is scaled by 1e9.
+        * Grab the sum 'S' from the epoch at which the stake was made. The SEI gain may span up to one scale change.
+        * If it does, the second portion of the SEI gain is scaled by 1e9.
         * If the gain spans no scale change, the second portion will be 0.
         */
         uint128 epochSnapshot = snapshots.epoch;
@@ -672,18 +672,18 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         uint firstPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot].sub(S_Snapshot);
         uint secondPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot.add(1)].div(SCALE_FACTOR);
 
-        uint ETHGain = initialDeposit.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(DECIMAL_PRECISION);
+        uint SEIGain = initialDeposit.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(DECIMAL_PRECISION);
 
-        return ETHGain;
+        return SEIGain;
     }
 
     /*
-    * Calculate the LQTY gain earned by a deposit since its last snapshots were taken.
-    * Given by the formula:  LQTY = d0 * (G - G(0))/P(0)
+    * Calculate the FLO gain earned by a deposit since its last snapshots were taken.
+    * Given by the formula:  FLO = d0 * (G - G(0))/P(0)
     * where G(0) and P(0) are the depositor's snapshots of the sum G and product P, respectively.
     * d0 is the last recorded deposit value.
     */
-    function getDepositorLQTYGain(address _depositor) public view override returns (uint) {
+    function getDepositorFLOGain(address _depositor) public view override returns (uint) {
         uint initialDeposit = deposits[_depositor].initialValue;
         if (initialDeposit == 0) {return 0;}
 
@@ -698,18 +698,18 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         Snapshots memory snapshots = depositSnapshots[_depositor];
 
-        uint LQTYGain = kickbackRate.mul(_getLQTYGainFromSnapshots(initialDeposit, snapshots)).div(DECIMAL_PRECISION);
+        uint FLOGain = kickbackRate.mul(_getFLOGainFromSnapshots(initialDeposit, snapshots)).div(DECIMAL_PRECISION);
 
-        return LQTYGain;
+        return FLOGain;
     }
 
     /*
-    * Return the LQTY gain earned by the front end. Given by the formula:  E = D0 * (G - G(0))/P(0)
+    * Return the FLO gain earned by the front end. Given by the formula:  E = D0 * (G - G(0))/P(0)
     * where G(0) and P(0) are the depositor's snapshots of the sum G and product P, respectively.
     *
     * D0 is the last recorded value of the front end's total tagged deposits.
     */
-    function getFrontEndLQTYGain(address _frontEnd) public view override returns (uint) {
+    function getFrontEndFLOGain(address _frontEnd) public view override returns (uint) {
         uint frontEndStake = frontEndStakes[_frontEnd];
         if (frontEndStake == 0) { return 0; }
 
@@ -718,14 +718,14 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         Snapshots memory snapshots = frontEndSnapshots[_frontEnd];
 
-        uint LQTYGain = frontEndShare.mul(_getLQTYGainFromSnapshots(frontEndStake, snapshots)).div(DECIMAL_PRECISION);
-        return LQTYGain;
+        uint FLOGain = frontEndShare.mul(_getFLOGainFromSnapshots(frontEndStake, snapshots)).div(DECIMAL_PRECISION);
+        return FLOGain;
     }
 
-    function _getLQTYGainFromSnapshots(uint initialStake, Snapshots memory snapshots) internal view returns (uint) {
+    function _getFLOGainFromSnapshots(uint initialStake, Snapshots memory snapshots) internal view returns (uint) {
        /*
-        * Grab the sum 'G' from the epoch at which the stake was made. The LQTY gain may span up to one scale change.
-        * If it does, the second portion of the LQTY gain is scaled by 1e9.
+        * Grab the sum 'G' from the epoch at which the stake was made. The FLO gain may span up to one scale change.
+        * If it does, the second portion of the FLO gain is scaled by 1e9.
         * If the gain spans no scale change, the second portion will be 0.
         */
         uint128 epochSnapshot = snapshots.epoch;
@@ -736,9 +736,9 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         uint firstPortion = epochToScaleToG[epochSnapshot][scaleSnapshot].sub(G_Snapshot);
         uint secondPortion = epochToScaleToG[epochSnapshot][scaleSnapshot.add(1)].div(SCALE_FACTOR);
 
-        uint LQTYGain = initialStake.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(DECIMAL_PRECISION);
+        uint FLOGain = initialStake.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(DECIMAL_PRECISION);
 
-        return LQTYGain;
+        return FLOGain;
     }
 
     // --- Compounded deposit and compounded front end stake ---
@@ -747,7 +747,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     * Return the user's compounded deposit. Given by the formula:  d = d0 * P/P(0)
     * where P(0) is the depositor's snapshot of the product P, taken when they last updated their deposit.
     */
-    function getCompoundedLUSDDeposit(address _depositor) public view override returns (uint) {
+    function getCompoundedSAIDeposit(address _depositor) public view override returns (uint) {
         uint initialDeposit = deposits[_depositor].initialValue;
         if (initialDeposit == 0) { return 0; }
 
@@ -819,33 +819,33 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         return compoundedStake;
     }
 
-    // --- Sender functions for LUSD deposit, ETH gains and LQTY gains ---
+    // --- Sender functions for SAI deposit, SEI gains and FLO gains ---
 
-    // Transfer the LUSD tokens from the user to the Stability Pool's address, and update its recorded LUSD
-    function _sendLUSDtoStabilityPool(address _address, uint _amount) internal {
-        lusdToken.sendToPool(_address, address(this), _amount);
-        uint newTotalLUSDDeposits = totalLUSDDeposits.add(_amount);
-        totalLUSDDeposits = newTotalLUSDDeposits;
-        emit StabilityPoolLUSDBalanceUpdated(newTotalLUSDDeposits);
+    // Transfer the SAI tokens from the user to the Stability Pool's address, and update its recorded SAI
+    function _sendSAItoStabilityPool(address _address, uint _amount) internal {
+        saiToken.sendToPool(_address, address(this), _amount);
+        uint newTotalSAIDeposits = totalSAIDeposits.add(_amount);
+        totalSAIDeposits = newTotalSAIDeposits;
+        emit StabilityPoolSAIBalanceUpdated(newTotalSAIDeposits);
     }
 
-    function _sendETHGainToDepositor(uint _amount) internal {
+    function _sendSEIGainToDepositor(uint _amount) internal {
         if (_amount == 0) {return;}
-        uint newETH = ETH.sub(_amount);
-        ETH = newETH;
-        emit StabilityPoolETHBalanceUpdated(newETH);
-        emit EtherSent(msg.sender, _amount);
+        uint newSEI = SEI.sub(_amount);
+        SEI = newSEI;
+        emit StabilityPoolSEIBalanceUpdated(newSEI);
+        emit SeiSent(msg.sender, _amount);
 
         (bool success, ) = msg.sender.call{ value: _amount }("");
-        require(success, "StabilityPool: sending ETH failed");
+        require(success, "StabilityPool: sending SEI failed");
     }
 
-    // Send LUSD to user and decrease LUSD in Pool
-    function _sendLUSDToDepositor(address _depositor, uint LUSDWithdrawal) internal {
-        if (LUSDWithdrawal == 0) {return;}
+    // Send SAI to user and decrease SAI in Pool
+    function _sendSAIToDepositor(address _depositor, uint SAIWithdrawal) internal {
+        if (SAIWithdrawal == 0) {return;}
 
-        lusdToken.returnFromPool(address(this), _depositor, LUSDWithdrawal);
-        _decreaseLUSD(LUSDWithdrawal);
+        saiToken.returnFromPool(address(this), _depositor, SAIWithdrawal);
+        _decreaseSAI(SAIWithdrawal);
     }
 
     // --- External Front End functions ---
@@ -922,18 +922,18 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         emit FrontEndSnapshotUpdated(_frontEnd, currentP, currentG);
     }
 
-    function _payOutLQTYGains(ICommunityIssuance _communityIssuance, address _depositor, address _frontEnd) internal {
-        // Pay out front end's LQTY gain
+    function _payOutFLOGains(ICommunityIssuance _communityIssuance, address _depositor, address _frontEnd) internal {
+        // Pay out front end's FLO gain
         if (_frontEnd != address(0)) {
-            uint frontEndLQTYGain = getFrontEndLQTYGain(_frontEnd);
-            _communityIssuance.sendLQTY(_frontEnd, frontEndLQTYGain);
-            emit LQTYPaidToFrontEnd(_frontEnd, frontEndLQTYGain);
+            uint frontEndFLOGain = getFrontEndFLOGain(_frontEnd);
+            _communityIssuance.sendFLO(_frontEnd, frontEndFLOGain);
+            emit FLOPaidToFrontEnd(_frontEnd, frontEndFLOGain);
         }
 
-        // Pay out depositor's LQTY gain
-        uint depositorLQTYGain = getDepositorLQTYGain(_depositor);
-        _communityIssuance.sendLQTY(_depositor, depositorLQTYGain);
-        emit LQTYPaidToDepositor(_depositor, depositorLQTYGain);
+        // Pay out depositor's FLO gain
+        uint depositorFLOGain = getDepositorFLOGain(_depositor);
+        _communityIssuance.sendFLO(_depositor, depositorFLOGain);
+        emit FLOPaidToDepositor(_depositor, depositorFLOGain);
     }
 
     // --- 'require' functions ---
@@ -967,12 +967,12 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     }
 
     function _requireUserHasTrove(address _depositor) internal view {
-        require(troveManager.getTroveStatus(_depositor) == 1, "StabilityPool: caller must have an active trove to withdraw ETHGain to");
+        require(troveManager.getTroveStatus(_depositor) == 1, "StabilityPool: caller must have an active trove to withdraw SEIGain to");
     }
 
-    function _requireUserHasETHGain(address _depositor) internal view {
-        uint ETHGain = getDepositorETHGain(_depositor);
-        require(ETHGain > 0, "StabilityPool: caller must have non-zero ETH Gain");
+    function _requireUserHasSEIGain(address _depositor) internal view {
+        uint SEIGain = getDepositorSEIGain(_depositor);
+        require(SEIGain > 0, "StabilityPool: caller must have non-zero SEI Gain");
     }
 
     function _requireFrontEndNotRegistered(address _address) internal view {
@@ -992,7 +992,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
     receive() external payable {
         _requireCallerIsActivePool();
-        ETH = ETH.add(msg.value);
-        StabilityPoolETHBalanceUpdated(ETH);
+        SEI = SEI.add(msg.value);
+        StabilityPoolSEIBalanceUpdated(SEI);
     }
 }

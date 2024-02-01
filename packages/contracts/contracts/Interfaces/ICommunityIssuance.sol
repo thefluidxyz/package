@@ -6,15 +6,15 @@ interface ICommunityIssuance {
     
     // --- Events ---
     
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    event FLOTokenAddressSet(address _floTokenAddress);
     event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
+    event TotalFLOIssuedUpdated(uint _totalFLOIssued);
 
     // --- Functions ---
 
-    function setAddresses(address _lqtyTokenAddress, address _stabilityPoolAddress) external;
+    function setAddresses(address _floTokenAddress, address _stabilityPoolAddress) external;
 
-    function issueLQTY() external returns (uint);
+    function issueFLO() external returns (uint);
 
-    function sendLQTY(address _account, uint _LQTYamount) external;
+    function sendFLO(address _account, uint _FLOamount) external;
 }

@@ -5,11 +5,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_floTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressSet",
+    "name": "FLOTokenAddressSet",
     "type": "event"
   },
   {
@@ -108,6 +108,19 @@
   },
   {
     "inputs": [],
+    "name": "floTokenAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "isOwner",
     "outputs": [
       {
@@ -159,19 +172,6 @@
   },
   {
     "inputs": [],
-    "name": "lqtyTokenAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -187,11 +187,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_floTokenAddress",
         "type": "address"
       }
     ],
-    "name": "setLQTYTokenAddress",
+    "name": "setFLOTokenAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

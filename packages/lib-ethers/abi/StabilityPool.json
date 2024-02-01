@@ -86,31 +86,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_ETH",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LUSDLoss",
-        "type": "uint256"
-      }
-    ],
-    "name": "ETHGainWithdrawn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint128",
         "name": "_currentEpoch",
@@ -124,19 +99,38 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "_to",
+        "name": "_depositor",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "_FLO",
         "type": "uint256"
       }
     ],
-    "name": "EtherSent",
+    "name": "FLOPaidToDepositor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_frontEnd",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_FLO",
+        "type": "uint256"
+      }
+    ],
+    "name": "FLOPaidToFrontEnd",
     "type": "event"
   },
   {
@@ -258,57 +252,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LQTY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LQTYPaidToDepositor",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LQTY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LQTYPaidToFrontEnd",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_newLUSDTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "LUSDTokenAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
@@ -346,6 +289,44 @@
       }
     ],
     "name": "PriceFeedAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newSAITokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SAITokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_depositor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_SEI",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_SAILoss",
+        "type": "uint256"
+      }
+    ],
+    "name": "SEIGainWithdrawn",
     "type": "event"
   },
   {
@@ -392,6 +373,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "SeiSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_newSortedTrovesAddress",
         "type": "address"
       }
@@ -409,7 +409,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StabilityPoolETHBalanceUpdated",
+    "name": "StabilityPoolSAIBalanceUpdated",
     "type": "event"
   },
   {
@@ -422,7 +422,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StabilityPoolLUSDBalanceUpdated",
+    "name": "StabilityPoolSEIBalanceUpdated",
     "type": "event"
   },
   {
@@ -498,19 +498,6 @@
   },
   {
     "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MCR",
     "outputs": [
       {
@@ -564,6 +551,19 @@
   {
     "inputs": [],
     "name": "PERCENT_DIVISOR",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SAI_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -898,7 +898,7 @@
         "type": "address"
       }
     ],
-    "name": "getCompoundedLUSDDeposit",
+    "name": "getCompoundedSAIDeposit",
     "outputs": [
       {
         "internalType": "uint256",
@@ -917,7 +917,7 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorETHGain",
+    "name": "getDepositorFLOGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -936,20 +936,7 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorLQTYGain",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getETH",
+    "name": "getDepositorSEIGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -994,7 +981,7 @@
         "type": "address"
       }
     ],
-    "name": "getFrontEndLQTYGain",
+    "name": "getFrontEndFLOGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1007,7 +994,20 @@
   },
   {
     "inputs": [],
-    "name": "getTotalLUSDDeposits",
+    "name": "getSEI",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalSAIDeposits",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1033,7 +1033,7 @@
   },
   {
     "inputs": [],
-    "name": "lastETHError_Offset",
+    "name": "lastFLOError",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1046,7 +1046,7 @@
   },
   {
     "inputs": [],
-    "name": "lastLQTYError",
+    "name": "lastSAILossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1059,25 +1059,12 @@
   },
   {
     "inputs": [],
-    "name": "lastLUSDLossError_Offset",
+    "name": "lastSEIError_Offset",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lusdToken",
-    "outputs": [
-      {
-        "internalType": "contract ILUSDToken",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1159,6 +1146,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "saiToken",
+    "outputs": [
+      {
+        "internalType": "contract ISAIToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1177,7 +1177,7 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_saiTokenAddress",
         "type": "address"
       },
       {
@@ -1230,6 +1230,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFromSP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_upperHint",
         "type": "address"
@@ -1240,20 +1253,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawETHGainToTrove",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawFromSP",
+    "name": "withdrawSEIGainToTrove",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

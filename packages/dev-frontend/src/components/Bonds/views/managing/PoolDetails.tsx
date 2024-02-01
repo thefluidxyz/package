@@ -5,10 +5,10 @@ import { useBondView } from "../../context/BondViewContext";
 import { PoolBalance } from "./PoolBalance";
 
 export const PoolDetails: React.FC = () => {
-  const { lpTokenSupply, bLusdAmmBLusdBalance, bLusdAmmLusdBalance, protocolInfo } = useBondView();
+  const { lpTokenSupply, bSaiAmmBSaiBalance, bSaiAmmSaiBalance, protocolInfo } = useBondView();
   const poolBalanceRatio =
-    bLusdAmmBLusdBalance && bLusdAmmLusdBalance
-      ? bLusdAmmLusdBalance.div(bLusdAmmBLusdBalance)
+    bSaiAmmBSaiBalance && bSaiAmmSaiBalance
+      ? bSaiAmmSaiBalance.div(bSaiAmmBSaiBalance)
       : Decimal.ONE;
 
   return (
@@ -23,12 +23,12 @@ export const PoolDetails: React.FC = () => {
             sx={{ alignItems: "center", justifyContent: "flex-start" }}
             inputId="deposit-pool-balance"
           >
-            <PoolBalance symbol="bLUSD">
-              {(bLusdAmmBLusdBalance ?? Decimal.ZERO).prettify(2)}
+            <PoolBalance symbol="bSAI">
+              {(bSaiAmmBSaiBalance ?? Decimal.ZERO).prettify(2)}
             </PoolBalance>
             <Text sx={{ fontWeight: "light", mx: "12px" }}>+</Text>
-            <PoolBalance symbol="LUSD-3CRV">
-              {(bLusdAmmLusdBalance ?? Decimal.ZERO).prettify(2)}
+            <PoolBalance symbol="SAI-3CRV">
+              {(bSaiAmmSaiBalance ?? Decimal.ZERO).prettify(2)}
             </PoolBalance>
           </StaticAmounts>
         </StaticRow>
@@ -38,9 +38,9 @@ export const PoolDetails: React.FC = () => {
             sx={{ alignItems: "center", justifyContent: "flex-start" }}
             inputId="deposit-pool-ratio"
           >
-            <PoolBalance symbol="bLUSD">1</PoolBalance>
+            <PoolBalance symbol="bSAI">1</PoolBalance>
             <Text sx={{ fontWeight: "thin", mx: "6px" }}>:</Text>
-            <PoolBalance symbol="LUSD-3CRV">{poolBalanceRatio.prettify(2)}</PoolBalance>
+            <PoolBalance symbol="SAI-3CRV">{poolBalanceRatio.prettify(2)}</PoolBalance>
           </StaticAmounts>
         </StaticRow>
 
@@ -51,18 +51,18 @@ export const PoolDetails: React.FC = () => {
             amount={(lpTokenSupply ?? Decimal.ZERO).prettify(2)}
           />
 
-          <StaticRow label="bLUSD price">
+          <StaticRow label="bSAI price">
             <StaticAmounts sx={{ alignItems: "center", justifyContent: "flex-start" }}>
-              <PoolBalance symbol="LUSD">
+              <PoolBalance symbol="SAI">
                 {(protocolInfo?.marketPrice ?? Decimal.INFINITY).prettify(2)}
               </PoolBalance>{" "}
             </StaticAmounts>
           </StaticRow>
 
-          <StaticRow label="bLUSD LP APR">
+          <StaticRow label="bSAI LP APR">
             <StaticAmounts sx={{ alignItems: "center", justifyContent: "flex-start" }}>
               <PoolBalance symbol="%">
-                {(protocolInfo?.bLusdLpApr ?? Decimal.INFINITY).prettify(2)}
+                {(protocolInfo?.bSaiLpApr ?? Decimal.INFINITY).prettify(2)}
               </PoolBalance>{" "}
             </StaticAmounts>
           </StaticRow>

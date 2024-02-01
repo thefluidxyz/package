@@ -24,9 +24,9 @@ export interface ObservableFluid {
     address?: string
   ): () => void;
 
-  watchLUSDInStabilityPool(
-    onLUSDInStabilityPoolChanged: (lusdInStabilityPool: Decimal) => void
+  watchSAIInStabilityPool(
+    onSAIInStabilityPoolChanged: (saiInStabilityPool: Decimal) => void
   ): () => void;
 
-  watchLUSDBalance(onLUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
+  watchSAIBalance(onSAIBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
 }

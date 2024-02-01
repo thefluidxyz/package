@@ -4,11 +4,11 @@ pragma solidity 0.6.11;
 
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Dependencies/LiquityBase.sol";
+import "./Dependencies/FluidBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 
-contract HintHelpers is LiquityBase, Ownable, CheckContract {
+contract HintHelpers is FluidBase, Ownable, CheckContract {
     string constant public NAME = "HintHelpers";
 
     ISortedTroves public sortedTroves;
@@ -44,15 +44,15 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
 
     /* getRedemptionHints() - Helper function for finding the right hints to pass to redeemCollateral().
      *
-     * It simulates a redemption of `_LUSDamount` to figure out where the redemption sequence will start and what state the final Trove
+     * It simulates a redemption of `_SAIamount` to figure out where the redemption sequence will start and what state the final Trove
      * of the sequence will end up in.
      *
      * Returns three hints:
      *  - `firstRedemptionHint` is the address of the first Trove with ICR >= MCR (i.e. the first Trove that will be redeemed).
      *  - `partialRedemptionHintNICR` is the final nominal ICR of the last Trove of the sequence after being hit by partial redemption,
      *     or zero in case of no partial redemption.
-     *  - `truncatedLUSDamount` is the maximum amount that can be redeemed out of the the provided `_LUSDamount`. This can be lower than
-     *    `_LUSDamount` when redeeming the full amount would leave the last Trove of the redemption sequence with less net debt than the
+     *  - `truncatedSAIamount` is the maximum amount that can be redeemed out of the the provided `_SAIamount`. This can be lower than
+     *    `_SAIamount` when redeeming the full amount would leave the last Trove of the redemption sequence with less net debt than the
      *    minimum allowed value (i.e. MIN_NET_DEBT).
      *
      * The number of Troves to consider for redemption can be capped by passing a non-zero value as `_maxIterations`, while passing zero
@@ -60,7 +60,7 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
      */
 
     function getRedemptionHints(
-        uint _LUSDamount, 
+        uint _SAIamount, 
         uint _price,
         uint _maxIterations
     )
@@ -69,12 +69,12 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
         returns (
             address firstRedemptionHint,
             uint partialRedemptionHintNICR,
-            uint truncatedLUSDamount
+            uint truncatedSAIamount
         )
     {
         ISortedTroves sortedTrovesCached = sortedTroves;
 
-        uint remainingLUSD = _LUSDamount;
+        uint remainingSAI = _SAIamount;
         address currentTroveuser = sortedTrovesCached.getLast();
 
         while (currentTroveuser != address(0) && troveManager.getCurrentICR(currentTroveuser, _price) < MCR) {
@@ -87,34 +87,34 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
             _maxIterations = uint(-1);
         }
 
-        while (currentTroveuser != address(0) && remainingLUSD > 0 && _maxIterations-- > 0) {
-            uint netLUSDDebt = _getNetDebt(troveManager.getTroveDebt(currentTroveuser))
-                .add(troveManager.getPendingLUSDDebtReward(currentTroveuser));
+        while (currentTroveuser != address(0) && remainingSAI > 0 && _maxIterations-- > 0) {
+            uint netSAIDebt = _getNetDebt(troveManager.getTroveDebt(currentTroveuser))
+                .add(troveManager.getPendingSAIDebtReward(currentTroveuser));
 
-            if (netLUSDDebt > remainingLUSD) {
-                if (netLUSDDebt > MIN_NET_DEBT) {
-                    uint maxRedeemableLUSD = LiquityMath._min(remainingLUSD, netLUSDDebt.sub(MIN_NET_DEBT));
+            if (netSAIDebt > remainingSAI) {
+                if (netSAIDebt > MIN_NET_DEBT) {
+                    uint maxRedeemableSAI = FluidMath._min(remainingSAI, netSAIDebt.sub(MIN_NET_DEBT));
 
-                    uint ETH = troveManager.getTroveColl(currentTroveuser)
-                        .add(troveManager.getPendingETHReward(currentTroveuser));
+                    uint SEI = troveManager.getTroveColl(currentTroveuser)
+                        .add(troveManager.getPendingSEIReward(currentTroveuser));
 
-                    uint newColl = ETH.sub(maxRedeemableLUSD.mul(DECIMAL_PRECISION).div(_price));
-                    uint newDebt = netLUSDDebt.sub(maxRedeemableLUSD);
+                    uint newColl = SEI.sub(maxRedeemableSAI.mul(DECIMAL_PRECISION).div(_price));
+                    uint newDebt = netSAIDebt.sub(maxRedeemableSAI);
 
                     uint compositeDebt = _getCompositeDebt(newDebt);
-                    partialRedemptionHintNICR = LiquityMath._computeNominalCR(newColl, compositeDebt);
+                    partialRedemptionHintNICR = FluidMath._computeNominalCR(newColl, compositeDebt);
 
-                    remainingLUSD = remainingLUSD.sub(maxRedeemableLUSD);
+                    remainingSAI = remainingSAI.sub(maxRedeemableSAI);
                 }
                 break;
             } else {
-                remainingLUSD = remainingLUSD.sub(netLUSDDebt);
+                remainingSAI = remainingSAI.sub(netSAIDebt);
             }
 
             currentTroveuser = sortedTrovesCached.getPrev(currentTroveuser);
         }
 
-        truncatedLUSDamount = _LUSDamount.sub(remainingLUSD);
+        truncatedSAIamount = _SAIamount.sub(remainingSAI);
     }
 
     /* getApproxHint() - return address of a Trove that is, on average, (length / numTrials) positions away in the 
@@ -138,7 +138,7 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
         }
 
         hintAddress = sortedTroves.getLast();
-        diff = LiquityMath._getAbsoluteDifference(_CR, troveManager.getNominalICR(hintAddress));
+        diff = FluidMath._getAbsoluteDifference(_CR, troveManager.getNominalICR(hintAddress));
         latestRandomSeed = _inputRandomSeed;
 
         uint i = 1;
@@ -151,7 +151,7 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
             uint currentNICR = troveManager.getNominalICR(currentAddress);
 
             // check if abs(current - CR) > abs(closest - CR), and update closest if current is closer
-            uint currentDiff = LiquityMath._getAbsoluteDifference(currentNICR, _CR);
+            uint currentDiff = FluidMath._getAbsoluteDifference(currentNICR, _CR);
 
             if (currentDiff < diff) {
                 diff = currentDiff;
@@ -162,10 +162,10 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
     }
 
     function computeNominalCR(uint _coll, uint _debt) external pure returns (uint) {
-        return LiquityMath._computeNominalCR(_coll, _debt);
+        return FluidMath._computeNominalCR(_coll, _debt);
     }
 
     function computeCR(uint _coll, uint _debt, uint _price) external pure returns (uint) {
-        return LiquityMath._computeCR(_coll, _debt, _price);
+        return FluidMath._computeCR(_coll, _debt, _price);
     }
 }

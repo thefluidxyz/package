@@ -6,11 +6,11 @@ import { useLiquitySelector } from "@fluid/lib-react";
 import { useFluid } from "../../hooks/FluidContext";
 import { useTransactionFunction } from "../Transaction";
 
-const selectLQTYStake = ({ lqtyStake }: FluidStoreState) => lqtyStake;
+const selectFLOStake = ({ floStake }: FluidStoreState) => floStake;
 
 export const StakingGainsAction: React.FC = () => {
   const { fluid } = useFluid();
-  const { collateralGain, lusdGain } = useLiquitySelector(selectLQTYStake);
+  const { collateralGain, saiGain } = useLiquitySelector(selectFLOStake);
 
   const [sendTransaction] = useTransactionFunction(
     "stake",
@@ -18,7 +18,7 @@ export const StakingGainsAction: React.FC = () => {
   );
 
   return (
-    <Button onClick={sendTransaction} disabled={collateralGain.isZero && lusdGain.isZero}>
+    <Button onClick={sendTransaction} disabled={collateralGain.isZero && saiGain.isZero}>
       Claim gains
     </Button>
   );

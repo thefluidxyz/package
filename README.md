@@ -61,7 +61,7 @@ Visit [fluid.org](https://www.fluid.org) to find out more and join the discussio
   - [Testnet PriceFeed and PriceFeed tests](#testnet-pricefeed-and-pricefeed-tests)
   - [PriceFeed limitations and known issues](#pricefeed-limitations-and-known-issues)
   - [Keeping a sorted list of Troves ordered by ICR](#keeping-a-sorted-list-of-troves-ordered-by-icr)
-  - [Flow of SEI in Fluid](#flow-of-ether-in-fluid)
+  - [Flow of SEI in Fluid](#flow-of-sei-in-fluid)
   - [Flow of SAI tokens in Fluid](#flow-of-sai-tokens-in-fluid)
   - [Flow of FLO Tokens in Fluid](#flow-of-flo-tokens-in-fluid)
 - [Expected User Behaviors](#expected-user-behaviors)
@@ -389,7 +389,7 @@ Along with `StabilityPool.sol`, these contracts hold SEI and/or tokens for their
 
 `ActivePool.sol` - holds the total SEI balance and records the total stablecoin debt of the active Troves.
 
-`DefaultPool.sol` - holds the total SEI balance and records the total stablecoin debt of the liquidated Troves that are pending redistribution to active Troves. If a Trove has pending ether/debt “rewards” in the DefaultPool, then they will be applied to the Trove when it next undergoes a borrower operation, a redemption, or a liquidation.
+`DefaultPool.sol` - holds the total SEI balance and records the total stablecoin debt of the liquidated Troves that are pending redistribution to active Troves. If a Trove has pending sei/debt “rewards” in the DefaultPool, then they will be applied to the Trove when it next undergoes a borrower operation, a redemption, or a liquidation.
 
 `CollSurplusPool.sol` - holds the SEI surplus from Troves that have been fully redeemed from as well as from Troves with an ICR > MCR that were liquidated in Recovery Mode. Sends the surplus back to the owning borrower, when told to do so by `BorrowerOperations.sol`.
 
@@ -495,7 +495,7 @@ SEI in the system lives in four Pools: the ActivePool, the DefaultPool, the Stab
 - From a Pool to a user
 - From one Pool to another Pool
 
-SEI is recorded on an _individual_ level, but stored in _aggregate_ in a Pool. An active Trove with collateral and debt has a struct in the TroveManager that stores its ether collateral value in a uint, but its actual SEI is in the balance of the ActivePool contract.
+SEI is recorded on an _individual_ level, but stored in _aggregate_ in a Pool. An active Trove with collateral and debt has a struct in the TroveManager that stores its sei collateral value in a uint, but its actual SEI is in the balance of the ActivePool contract.
 
 Likewise, the StabilityPool holds the total accumulated SEI gains from liquidations for all depositors.
 
@@ -765,7 +765,7 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 `batchLiquidateTroves(address[] calldata _troveArray)`: callable by anyone, accepts a custom list of Troves addresses as an argument. Steps through the provided list and attempts to liquidate every Trove, until it reaches the end or it runs out of gas. A Trove is liquidated only if it meets the conditions for liquidation. For a batch of 10 Troves, the gas costs per liquidated Trove are roughly between 75K-83K, for a batch of 50 Troves between 54K-69K.
 
-`redeemCollateral(uint _SAIAmount, address _firstRedemptionHint, address _upperPartialRedemptionHint, address _lowerPartialRedemptionHint, uint _partialRedemptionHintNICR, uint _maxIterations, uint _maxFeePercentage)`: redeems `_SAIamount` of stablecoins for ether from the system. Decreases the caller’s SAI balance, and sends them the corresponding amount of SEI. Executes successfully if the caller has sufficient SAI to redeem. The number of Troves redeemed from is capped by `_maxIterations`. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when another redemption transaction is processed first, driving up the redemption fee.
+`redeemCollateral(uint _SAIAmount, address _firstRedemptionHint, address _upperPartialRedemptionHint, address _lowerPartialRedemptionHint, uint _partialRedemptionHintNICR, uint _maxIterations, uint _maxFeePercentage)`: redeems `_SAIamount` of stablecoins for sei from the system. Decreases the caller’s SAI balance, and sends them the corresponding amount of SEI. Executes successfully if the caller has sufficient SAI to redeem. The number of Troves redeemed from is capped by `_maxIterations`. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when another redemption transaction is processed first, driving up the redemption fee.
 
 `getCurrentICR(address _user, uint _price)`: computes the user’s individual collateralization ratio (ICR) based on their total collateral and total SAI debt. Returns 2^256 -1 if they have 0 debt.
 

@@ -18,11 +18,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_ETH",
+        "name": "_SAIDebt",
         "type": "uint256"
       }
     ],
-    "name": "ActivePoolETHBalanceUpdated",
+    "name": "ActivePoolSAIDebtUpdated",
     "type": "event"
   },
   {
@@ -31,11 +31,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_LUSDDebt",
+        "name": "_SEI",
         "type": "uint256"
       }
     ],
-    "name": "ActivePoolLUSDDebtUpdated",
+    "name": "ActivePoolSEIBalanceUpdated",
     "type": "event"
   },
   {
@@ -68,13 +68,45 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "_newBalance",
         "type": "uint256"
       }
     ],
-    "name": "ETHBalanceUpdated",
+    "name": "SAIBalanceUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_newBalance",
+        "type": "uint256"
+      }
+    ],
+    "name": "SEIBalanceUpdated",
     "type": "event"
   },
   {
@@ -93,39 +125,7 @@
         "type": "uint256"
       }
     ],
-    "name": "EtherSent",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_newBalance",
-        "type": "uint256"
-      }
-    ],
-    "name": "LUSDBalanceUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
+    "name": "SeiSent",
     "type": "event"
   },
   {
@@ -188,7 +188,7 @@
         "type": "uint256"
       }
     ],
-    "name": "decreaseLUSDDebt",
+    "name": "decreaseSAIDebt",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -208,7 +208,7 @@
   },
   {
     "inputs": [],
-    "name": "getETH",
+    "name": "getSAIDebt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -221,7 +221,7 @@
   },
   {
     "inputs": [],
-    "name": "getLUSDDebt",
+    "name": "getSEI",
     "outputs": [
       {
         "internalType": "uint256",
@@ -240,7 +240,7 @@
         "type": "uint256"
       }
     ],
-    "name": "increaseLUSDDebt",
+    "name": "increaseSAIDebt",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -284,7 +284,7 @@
         "type": "uint256"
       }
     ],
-    "name": "sendETH",
+    "name": "sendSEI",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

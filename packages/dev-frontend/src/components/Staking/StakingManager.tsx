@@ -5,8 +5,8 @@ import {
   Decimal,
   Decimalish,
   FluidStoreState,
-  LQTYStake,
-  LQTYStakeChange
+  FLOStake,
+  FLOStakeChange
 } from "@fluid/lib-base";
 
 import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@fluid/lib-react";
@@ -19,9 +19,9 @@ import { StakingManagerAction } from "./StakingManagerAction";
 import { ActionDescription, Amount } from "../ActionDescription";
 import { ErrorDescription } from "../ErrorDescription";
 
-const init = ({ lqtyStake }: FluidStoreState) => ({
-  originalStake: lqtyStake,
-  editedLQTY: lqtyStake.stakedLQTY
+const init = ({ floStake }: FluidStoreState) => ({
+  originalStake: floStake,
+  editedFLO: floStake.stakedFLO
 });
 
 type StakeManagerState = ReturnType<typeof init>;
@@ -34,24 +34,24 @@ const reduce = (state: StakeManagerState, action: StakeManagerAction): StakeMana
   // console.log(state);
   // console.log(action);
 
-  const { originalStake, editedLQTY } = state;
+  const { originalStake, editedFLO } = state;
 
   switch (action.type) {
     case "setStake":
-      return { ...state, editedLQTY: Decimal.from(action.newValue) };
+      return { ...state, editedFLO: Decimal.from(action.newValue) };
 
     case "revert":
-      return { ...state, editedLQTY: originalStake.stakedLQTY };
+      return { ...state, editedFLO: originalStake.stakedFLO };
 
     case "updateStore": {
       const {
-        stateChange: { lqtyStake: updatedStake }
+        stateChange: { floStake: updatedStake }
       } = action;
 
       if (updatedStake) {
         return {
           originalStake: updatedStake,
-          editedLQTY: updatedStake.apply(originalStake.whatChanged(editedLQTY))
+          editedFLO: updatedStake.apply(originalStake.whatChanged(editedFLO))
         };
       }
     }
@@ -60,53 +60,53 @@ const reduce = (state: StakeManagerState, action: StakeManagerAction): StakeMana
   return state;
 };
 
-const selectLQTYBalance = ({ lqtyBalance }: FluidStoreState) => lqtyBalance;
+const selectFLOBalance = ({ floBalance }: FluidStoreState) => floBalance;
 
 type StakingManagerActionDescriptionProps = {
-  originalStake: LQTYStake;
-  change: LQTYStakeChange<Decimal>;
+  originalStake: FLOStake;
+  change: FLOStakeChange<Decimal>;
 };
 
 const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionProps> = ({
   originalStake,
   change
 }) => {
-  const stakeLQTY = change.stakeLQTY?.prettify().concat(" ", GT);
-  const unstakeLQTY = change.unstakeLQTY?.prettify().concat(" ", GT);
+  const stakeFLO = change.stakeFLO?.prettify().concat(" ", GT);
+  const unstakeFLO = change.unstakeFLO?.prettify().concat(" ", GT);
   const collateralGain = originalStake.collateralGain.nonZero?.prettify(4).concat(" ETH");
-  const lusdGain = originalStake.lusdGain.nonZero?.prettify().concat(" ", COIN);
+  const saiGain = originalStake.saiGain.nonZero?.prettify().concat(" ", COIN);
 
-  if (originalStake.isEmpty && stakeLQTY) {
+  if (originalStake.isEmpty && stakeFLO) {
     return (
       <ActionDescription>
-        You are staking <Amount>{stakeLQTY}</Amount>.
+        You are staking <Amount>{stakeFLO}</Amount>.
       </ActionDescription>
     );
   }
 
   return (
     <ActionDescription>
-      {stakeLQTY && (
+      {stakeFLO && (
         <>
-          You are adding <Amount>{stakeLQTY}</Amount> to your stake
+          You are adding <Amount>{stakeFLO}</Amount> to your stake
         </>
       )}
-      {unstakeLQTY && (
+      {unstakeFLO && (
         <>
-          You are withdrawing <Amount>{unstakeLQTY}</Amount> to your wallet
+          You are withdrawing <Amount>{unstakeFLO}</Amount> to your wallet
         </>
       )}
-      {(collateralGain || lusdGain) && (
+      {(collateralGain || saiGain) && (
         <>
           {" "}
           and claiming{" "}
-          {collateralGain && lusdGain ? (
+          {collateralGain && saiGain ? (
             <>
-              <Amount>{collateralGain}</Amount> and <Amount>{lusdGain}</Amount>
+              <Amount>{collateralGain}</Amount> and <Amount>{saiGain}</Amount>
             </>
           ) : (
             <>
-              <Amount>{collateralGain ?? lusdGain}</Amount>
+              <Amount>{collateralGain ?? saiGain}</Amount>
             </>
           )}
         </>
@@ -118,19 +118,19 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
 
 export const StakingManager: React.FC = () => {
   const { dispatch: dispatchStakingViewAction } = useStakingView();
-  const [{ originalStake, editedLQTY }, dispatch] = useLiquityReducer(reduce, init);
-  const lqtyBalance = useLiquitySelector(selectLQTYBalance);
+  const [{ originalStake, editedFLO }, dispatch] = useLiquityReducer(reduce, init);
+  const floBalance = useLiquitySelector(selectFLOBalance);
 
-  const change = originalStake.whatChanged(editedLQTY);
+  const change = originalStake.whatChanged(editedFLO);
   const [validChange, description] = !change
     ? [undefined, undefined]
-    : change.stakeLQTY?.gt(lqtyBalance)
+    : change.stakeFLO?.gt(floBalance)
     ? [
         undefined,
         <ErrorDescription>
           The amount you're trying to stake exceeds your balance by{" "}
           <Amount>
-            {change.stakeLQTY.sub(lqtyBalance).prettify()} {GT}
+            {change.stakeFLO.sub(floBalance).prettify()} {GT}
           </Amount>
           .
         </ErrorDescription>
@@ -140,7 +140,7 @@ export const StakingManager: React.FC = () => {
   const makingNewStake = originalStake.isEmpty;
 
   return (
-    <StakingEditor title={"Staking"} {...{ originalStake, editedLQTY, dispatch }}>
+    <StakingEditor title={"Staking"} {...{ originalStake, editedFLO, dispatch }}>
       {description ??
         (makingNewStake ? (
           <ActionDescription>Enter the amount of {GT} you'd like to stake.</ActionDescription>

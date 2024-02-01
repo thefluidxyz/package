@@ -2,7 +2,8 @@ import React from "react";
 // import { Flex, Container } from "theme-ui";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Decimal, Difference, Trove } from "@fluid/lib-base";
 import { LiquityStoreProvider } from "@fluid/lib-react";
 
@@ -51,7 +52,7 @@ export const FluidFrontend: React.FC<FluidFrontendProps> = ({ loader }) => {
           <StabilityViewProvider>
             <StakingViewProvider>
               <BondsProvider>
-                <div className="flex flex-col min-h-full px-5 md:px-10 lg:px-[60px] pb-[166px]">
+                <div className="flex flex-col min-h-full px-5 md:px-10 lg:px-[60px] pb-[192px] sm:pb-[166px]">
                   <div className="flex flex-row justify-between py-4 px-0 sm:px-4">
                     <FluidLogo />
                     <UserAccount />
@@ -87,6 +88,8 @@ export const FluidFrontend: React.FC<FluidFrontendProps> = ({ loader }) => {
         </TroveViewProvider>
       </Router>
       <TransactionMonitor />
+      <ToastContainer toastStyle={{ backgroundColor: "#343434" }} 
+      />
     </LiquityStoreProvider>
   );
 };

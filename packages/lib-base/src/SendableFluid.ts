@@ -169,14 +169,14 @@ export interface SendableFluid<R = unknown, S = unknown>
     amount: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, TroveAdjustmentDetails>>>;
 
-  /** {@inheritDoc TransactableFluid.borrowLUSD} */
-  borrowLUSD(
+  /** {@inheritDoc TransactableFluid.borrowSAI} */
+  borrowSAI(
     amount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, TroveAdjustmentDetails>>>;
 
-  /** {@inheritDoc TransactableFluid.repayLUSD} */
-  repayLUSD(
+  /** {@inheritDoc TransactableFluid.repaySAI} */
+  repaySAI(
     amount: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, TroveAdjustmentDetails>>>;
 
@@ -193,14 +193,14 @@ export interface SendableFluid<R = unknown, S = unknown>
     maximumNumberOfTrovesToLiquidate: number
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, LiquidationDetails>>>;
 
-  /** {@inheritDoc TransactableFluid.depositLUSDInStabilityPool} */
-  depositLUSDInStabilityPool(
+  /** {@inheritDoc TransactableFluid.depositSAIInStabilityPool} */
+  depositSAIInStabilityPool(
     amount: Decimalish,
     frontendTag?: string
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, StabilityDepositChangeDetails>>>;
 
-  /** {@inheritDoc TransactableFluid.withdrawLUSDFromStabilityPool} */
-  withdrawLUSDFromStabilityPool(
+  /** {@inheritDoc TransactableFluid.withdrawSAIFromStabilityPool} */
+  withdrawSAIFromStabilityPool(
     amount: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, StabilityDepositChangeDetails>>>;
 
@@ -214,20 +214,20 @@ export interface SendableFluid<R = unknown, S = unknown>
     SentFluidTransaction<S, FluidReceipt<R, CollateralGainTransferDetails>>
   >;
 
-  /** {@inheritDoc TransactableFluid.sendLUSD} */
-  sendLUSD(
+  /** {@inheritDoc TransactableFluid.sendSAI} */
+  sendSAI(
     toAddress: string,
     amount: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
-  /** {@inheritDoc TransactableFluid.sendLQTY} */
-  sendLQTY(
+  /** {@inheritDoc TransactableFluid.sendFLO} */
+  sendFLO(
     toAddress: string,
     amount: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
-  /** {@inheritDoc TransactableFluid.redeemLUSD} */
-  redeemLUSD(
+  /** {@inheritDoc TransactableFluid.redeemSAI} */
+  redeemSAI(
     amount: Decimalish,
     maxRedemptionRate?: Decimalish
   ): Promise<SentFluidTransaction<S, FluidReceipt<R, RedemptionDetails>>>;
@@ -235,11 +235,11 @@ export interface SendableFluid<R = unknown, S = unknown>
   /** {@inheritDoc TransactableFluid.claimCollateralSurplus} */
   claimCollateralSurplus(): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
-  /** {@inheritDoc TransactableFluid.stakeLQTY} */
-  stakeLQTY(amount: Decimalish): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
+  /** {@inheritDoc TransactableFluid.stakeFLO} */
+  stakeFLO(amount: Decimalish): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
-  /** {@inheritDoc TransactableFluid.unstakeLQTY} */
-  unstakeLQTY(amount: Decimalish): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
+  /** {@inheritDoc TransactableFluid.unstakeFLO} */
+  unstakeFLO(amount: Decimalish): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
   /** {@inheritDoc TransactableFluid.withdrawGainsFromStaking} */
   withdrawGainsFromStaking(): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
@@ -255,8 +255,8 @@ export interface SendableFluid<R = unknown, S = unknown>
   /** {@inheritDoc TransactableFluid.unstakeUniTokens} */
   unstakeUniTokens(amount: Decimalish): Promise<SentFluidTransaction<S, FluidReceipt<R, void>>>;
 
-  /** {@inheritDoc TransactableFluid.withdrawLQTYRewardFromLiquidityMining} */
-  withdrawLQTYRewardFromLiquidityMining(): Promise<
+  /** {@inheritDoc TransactableFluid.withdrawFLORewardFromLiquidityMining} */
+  withdrawFLORewardFromLiquidityMining(): Promise<
     SentFluidTransaction<S, FluidReceipt<R, void>>
   >;
 

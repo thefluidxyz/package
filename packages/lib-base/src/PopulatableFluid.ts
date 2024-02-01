@@ -42,16 +42,16 @@ export interface PopulatedFluidTransaction<
  * @remarks
  * The Fluid protocol fulfills redemptions by repaying the debt of Troves in ascending order of
  * their collateralization ratio, and taking a portion of their collateral in exchange. Due to the
- * {@link @fluid/lib-base#LUSD_MINIMUM_DEBT | minimum debt} requirement that Troves must fulfill,
- * some LUSD amounts are not possible to redeem exactly.
+ * {@link @fluid/lib-base#SAI_MINIMUM_DEBT | minimum debt} requirement that Troves must fulfill,
+ * some SAI amounts are not possible to redeem exactly.
  *
- * When {@link @fluid/lib-base#PopulatableFluid.redeemLUSD | redeemLUSD()} is called with an
- * amount that can't be fully redeemed, the amount will be truncated (see the `redeemableLUSDAmount`
+ * When {@link @fluid/lib-base#PopulatableFluid.redeemSAI | redeemSAI()} is called with an
+ * amount that can't be fully redeemed, the amount will be truncated (see the `redeemableSAIAmount`
  * property). When this happens, the redeemer can either redeem the truncated amount by sending the
  * transaction unchanged, or prepare a new transaction by
  * {@link @fluid/lib-base#PopulatedRedemption.increaseAmountByMinimumNetDebt | increasing the amount}
  * to the next lowest possible value, which is the sum of the truncated amount and
- * {@link @fluid/lib-base#LUSD_MINIMUM_NET_DEBT}.
+ * {@link @fluid/lib-base#SAI_MINIMUM_NET_DEBT}.
  *
  * @public
  */
@@ -60,13 +60,13 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown>
     P,
     SentFluidTransaction<S, FluidReceipt<R, RedemptionDetails>>
   > {
-  /** Amount of LUSD the redeemer is trying to redeem. */
-  readonly attemptedLUSDAmount: Decimal;
+  /** Amount of SAI the redeemer is trying to redeem. */
+  readonly attemptedSAIAmount: Decimal;
 
-  /** Maximum amount of LUSD that is currently redeemable from `attemptedLUSDAmount`. */
-  readonly redeemableLUSDAmount: Decimal;
+  /** Maximum amount of SAI that is currently redeemable from `attemptedSAIAmount`. */
+  readonly redeemableSAIAmount: Decimal;
 
-  /** Whether `redeemableLUSDAmount` is less than `attemptedLUSDAmount`. */
+  /** Whether `redeemableSAIAmount` is less than `attemptedSAIAmount`. */
   readonly isTruncated: boolean;
 
   /**
@@ -158,8 +158,8 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     >
   >;
 
-  /** {@inheritDoc TransactableFluid.borrowLUSD} */
-  borrowLUSD(
+  /** {@inheritDoc TransactableFluid.borrowSAI} */
+  borrowSAI(
     amount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<
@@ -169,8 +169,8 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     >
   >;
 
-  /** {@inheritDoc TransactableFluid.repayLUSD} */
-  repayLUSD(
+  /** {@inheritDoc TransactableFluid.repaySAI} */
+  repaySAI(
     amount: Decimalish
   ): Promise<
     PopulatedFluidTransaction<
@@ -198,8 +198,8 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, LiquidationDetails>>>
   >;
 
-  /** {@inheritDoc TransactableFluid.depositLUSDInStabilityPool} */
-  depositLUSDInStabilityPool(
+  /** {@inheritDoc TransactableFluid.depositSAIInStabilityPool} */
+  depositSAIInStabilityPool(
     amount: Decimalish,
     frontendTag?: string
   ): Promise<
@@ -209,8 +209,8 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     >
   >;
 
-  /** {@inheritDoc TransactableFluid.withdrawLUSDFromStabilityPool} */
-  withdrawLUSDFromStabilityPool(
+  /** {@inheritDoc TransactableFluid.withdrawSAIFromStabilityPool} */
+  withdrawSAIFromStabilityPool(
     amount: Decimalish
   ): Promise<
     PopulatedFluidTransaction<
@@ -235,20 +235,20 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     >
   >;
 
-  /** {@inheritDoc TransactableFluid.sendLUSD} */
-  sendLUSD(
+  /** {@inheritDoc TransactableFluid.sendSAI} */
+  sendSAI(
     toAddress: string,
     amount: Decimalish
   ): Promise<PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>>;
 
-  /** {@inheritDoc TransactableFluid.sendLQTY} */
-  sendLQTY(
+  /** {@inheritDoc TransactableFluid.sendFLO} */
+  sendFLO(
     toAddress: string,
     amount: Decimalish
   ): Promise<PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>>;
 
-  /** {@inheritDoc TransactableFluid.redeemLUSD} */
-  redeemLUSD(
+  /** {@inheritDoc TransactableFluid.redeemSAI} */
+  redeemSAI(
     amount: Decimalish,
     maxRedemptionRate?: Decimalish
   ): Promise<PopulatedRedemption<P, S, R>>;
@@ -258,13 +258,13 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>
   >;
 
-  /** {@inheritDoc TransactableFluid.stakeLQTY} */
-  stakeLQTY(
+  /** {@inheritDoc TransactableFluid.stakeFLO} */
+  stakeFLO(
     amount: Decimalish
   ): Promise<PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>>;
 
-  /** {@inheritDoc TransactableFluid.unstakeLQTY} */
-  unstakeLQTY(
+  /** {@inheritDoc TransactableFluid.unstakeFLO} */
+  unstakeFLO(
     amount: Decimalish
   ): Promise<PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>>;
 
@@ -288,8 +288,8 @@ export interface PopulatableFluid<R = unknown, S = unknown, P = unknown>
     amount: Decimalish
   ): Promise<PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>>;
 
-  /** {@inheritDoc TransactableFluid.withdrawLQTYRewardFromLiquidityMining} */
-  withdrawLQTYRewardFromLiquidityMining(): Promise<
+  /** {@inheritDoc TransactableFluid.withdrawFLORewardFromLiquidityMining} */
+  withdrawFLORewardFromLiquidityMining(): Promise<
     PopulatedFluidTransaction<P, SentFluidTransaction<S, FluidReceipt<R, void>>>
   >;
 

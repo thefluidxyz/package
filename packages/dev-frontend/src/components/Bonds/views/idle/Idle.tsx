@@ -5,15 +5,15 @@ import { BondList } from "./BondList";
 import { useBondView } from "../../context/BondViewContext";
 import { BONDS } from "../../lexicon";
 import { InfoIcon } from "../../../InfoIcon";
-import { BLusdAmmTokenIndex, SwapPressedPayload } from "../../context/transitions";
+import { BSaiAmmTokenIndex, SwapPressedPayload } from "../../context/transitions";
 import { useFluid } from "../../../../hooks/FluidContext";
 import { useBondAddresses } from "../../context/BondAddressesContext";
 
 export const Idle: React.FC = () => {
   const { fluid } = useFluid();
-  const { LUSD_OVERRIDE_ADDRESS } = useBondAddresses();
+  const { SAI_OVERRIDE_ADDRESS } = useBondAddresses();
 
-  const { dispatchEvent, bonds, getLusdFromFaucet, lusdBalance, hasLoaded } = useBondView();
+  const { dispatchEvent, bonds, getSaiFromFaucet, saiBalance, hasLoaded } = useBondView();
   const [chain, setChain] = useState<number>();
 
   useEffect(() => {
@@ -28,15 +28,15 @@ export const Idle: React.FC = () => {
 
   const hasBonds = bonds !== undefined && bonds.length > 0;
 
-  const showLusdFaucet = LUSD_OVERRIDE_ADDRESS !== null && lusdBalance?.eq(0);
+  const showSaiFaucet = SAI_OVERRIDE_ADDRESS !== null && saiBalance?.eq(0);
 
   const handleManageLiquidityPressed = () => dispatchEvent("MANAGE_LIQUIDITY_PRESSED");
 
-  const handleBuyBLusdPressed = () =>
-    dispatchEvent("SWAP_PRESSED", { inputToken: BLusdAmmTokenIndex.LUSD } as SwapPressedPayload);
+  const handleBuyBSaiPressed = () =>
+    dispatchEvent("SWAP_PRESSED", { inputToken: BSaiAmmTokenIndex.SAI } as SwapPressedPayload);
 
-  const handleSellBLusdPressed = () =>
-    dispatchEvent("SWAP_PRESSED", { inputToken: BLusdAmmTokenIndex.BLUSD } as SwapPressedPayload);
+  const handleSellBSaiPressed = () =>
+    dispatchEvent("SWAP_PRESSED", { inputToken: BSaiAmmTokenIndex.BSAI } as SwapPressedPayload);
 
   return (
     <>
@@ -45,17 +45,17 @@ export const Idle: React.FC = () => {
           Manage liquidity
         </Button>
 
-        <Button variant="outline" onClick={handleBuyBLusdPressed}>
-          Buy bLUSD
+        <Button variant="outline" onClick={handleBuyBSaiPressed}>
+          Buy bSAI
         </Button>
 
-        <Button variant="outline" onClick={handleSellBLusdPressed}>
-          Sell bLUSD
+        <Button variant="outline" onClick={handleSellBSaiPressed}>
+          Sell bSAI
         </Button>
 
-        {showLusdFaucet && (
-          <Button variant={hasBonds ? "outline" : "primary"} onClick={() => getLusdFromFaucet()}>
-            Get 10k LUSD
+        {showSaiFaucet && (
+          <Button variant={hasBonds ? "outline" : "primary"} onClick={() => getSaiFromFaucet()}>
+            Get 10k SAI
           </Button>
         )}
 

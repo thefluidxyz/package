@@ -44,56 +44,24 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_floStakingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "FLOStakingAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_gasPoolAddress",
         "type": "address"
       }
     ],
     "name": "GasPoolAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_lqtyStakingAddress",
-        "type": "address"
-      }
-    ],
-    "name": "LQTYStakingAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_borrower",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_LUSDFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "LUSDBorrowingFeePaid",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_lusdTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "LUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -126,6 +94,38 @@
       }
     ],
     "name": "PriceFeedAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_SAIFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "SAIBorrowingFeePaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_saiTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SAITokenAddressChanged",
     "type": "event"
   },
   {
@@ -264,19 +264,6 @@
   },
   {
     "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MCR",
     "outputs": [
       {
@@ -317,6 +304,19 @@
   {
     "inputs": [],
     "name": "PERCENT_DIVISOR",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SAI_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -385,7 +385,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDChange",
+        "name": "_SAIChange",
         "type": "uint256"
       },
       {
@@ -429,6 +429,32 @@
     "outputs": [
       {
         "internalType": "contract IDefaultPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "floStaking",
+    "outputs": [
+      {
+        "internalType": "contract IFLOStaking",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "floStakingAddress",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -495,45 +521,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "lqtyStaking",
-    "outputs": [
-      {
-        "internalType": "contract ILQTYStaking",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lqtyStakingAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lusdToken",
-    "outputs": [
-      {
-        "internalType": "contract ILUSDToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -551,7 +538,7 @@
         "type": "address"
       }
     ],
-    "name": "moveETHGainToTrove",
+    "name": "moveSEIGainToTrove",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -565,7 +552,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_SAIAmount",
         "type": "uint256"
       },
       {
@@ -614,7 +601,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_SAIAmount",
         "type": "uint256"
       },
       {
@@ -628,9 +615,22 @@
         "type": "address"
       }
     ],
-    "name": "repayLUSD",
+    "name": "repaySAI",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "saiToken",
+    "outputs": [
+      {
+        "internalType": "contract ISAIToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -677,12 +677,12 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_saiTokenAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_floStakingAddress",
         "type": "address"
       }
     ],
@@ -749,7 +749,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_SAIAmount",
         "type": "uint256"
       },
       {
@@ -763,7 +763,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawLUSD",
+    "name": "withdrawSAI",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

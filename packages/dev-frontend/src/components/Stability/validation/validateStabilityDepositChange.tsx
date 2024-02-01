@@ -12,12 +12,12 @@ import { StabilityActionDescription } from "../StabilityActionDescription";
 
 export const selectForStabilityDepositChangeValidation = ({
   trove,
-  lusdBalance,
+  saiBalance,
   ownFrontend,
   haveUndercollateralizedTroves
 }: FluidStoreState) => ({
   trove,
-  lusdBalance,
+  saiBalance,
   haveOwnFrontend: ownFrontend.status === "registered",
   haveUndercollateralizedTroves
 });
@@ -28,9 +28,9 @@ type StabilityDepositChangeValidationContext = ReturnType<
 
 export const validateStabilityDepositChange = (
   originalDeposit: StabilityDeposit,
-  editedLUSD: Decimal,
+  editedSAI: Decimal,
   {
-    lusdBalance,
+    saiBalance,
     haveOwnFrontend,
     haveUndercollateralizedTroves
   }: StabilityDepositChangeValidationContext
@@ -38,7 +38,7 @@ export const validateStabilityDepositChange = (
   validChange: StabilityDepositChange<Decimal> | undefined,
   description: JSX.Element | undefined
 ] => {
-  const change = originalDeposit.whatChanged(editedLUSD);
+  const change = originalDeposit.whatChanged(editedSAI);
 
   if (haveOwnFrontend) {
     return [
@@ -53,24 +53,24 @@ export const validateStabilityDepositChange = (
     return [undefined, undefined];
   }
 
-  if (change.depositLUSD?.gt(lusdBalance)) {
+  if (change.depositSAI?.gt(saiBalance)) {
     return [
       undefined,
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
         <Amount>
-          {change.depositLUSD.sub(lusdBalance).prettify()} {COIN}
+          {change.depositSAI.sub(saiBalance).prettify()} {COIN}
         </Amount>
         .
       </ErrorDescription>
     ];
   }
 
-  if (change.withdrawLUSD && haveUndercollateralizedTroves) {
+  if (change.withdrawSAI && haveUndercollateralizedTroves) {
     return [
       undefined,
       <ErrorDescription>
-        You're not allowed to withdraw LUSD from your Stability Deposit when there are
+        You're not allowed to withdraw SAI from your Stability Deposit when there are
         undercollateralized Troves. Please liquidate those Troves or try again later.
       </ErrorDescription>
     ];

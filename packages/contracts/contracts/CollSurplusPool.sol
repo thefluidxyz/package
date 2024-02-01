@@ -18,8 +18,8 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     address public troveManagerAddress;
     address public activePoolAddress;
 
-    // deposited ether tracker
-    uint256 internal ETH;
+    // deposited sei tracker
+    uint256 internal SEI;
     // Collateral surplus claimable by trove owners
     mapping (address => uint) internal balances;
 
@@ -30,7 +30,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     event ActivePoolAddressChanged(address _newActivePoolAddress);
 
     event CollBalanceUpdated(address indexed _account, uint _newBalance);
-    event EtherSent(address _to, uint _amount);
+    event SeiSent(address _to, uint _amount);
     
     // --- Contract setters ---
 
@@ -58,10 +58,10 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         _renounceOwnership();
     }
 
-    /* Returns the ETH state variable at ActivePool address.
-       Not necessarily equal to the raw ether balance - ether can be forcibly sent to contracts. */
-    function getETH() external view override returns (uint) {
-        return ETH;
+    /* Returns the SEI state variable at ActivePool address.
+       Not necessarily equal to the raw sei balance - sei can be forcibly sent to contracts. */
+    function getSEI() external view override returns (uint) {
+        return SEI;
     }
 
     function getCollateral(address _account) external view override returns (uint) {
@@ -87,11 +87,11 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         balances[_account] = 0;
         emit CollBalanceUpdated(_account, 0);
 
-        ETH = ETH.sub(claimableColl);
-        emit EtherSent(_account, claimableColl);
+        SEI = SEI.sub(claimableColl);
+        emit SeiSent(_account, claimableColl);
 
         (bool success, ) = _account.call{ value: claimableColl }("");
-        require(success, "CollSurplusPool: sending ETH failed");
+        require(success, "CollSurplusPool: sending SEI failed");
     }
 
     // --- 'require' functions ---
@@ -118,6 +118,6 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
 
     receive() external payable {
         _requireCallerIsActivePool();
-        ETH = ETH.add(msg.value);
+        SEI = SEI.add(msg.value);
     }
 }

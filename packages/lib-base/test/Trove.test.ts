@@ -3,18 +3,18 @@ import { describe, it } from "mocha";
 import fc from "fast-check";
 
 import {
-  LUSD_LIQUIDATION_RESERVE,
-  LUSD_MINIMUM_DEBT,
+  SAI_LIQUIDATION_RESERVE,
+  SAI_MINIMUM_DEBT,
   MAXIMUM_BORROWING_RATE
 } from "../src/constants";
 
 import { Decimal, Difference } from "../src/Decimal";
 import { Trove, _emptyTrove } from "../src/Trove";
 
-const liquidationReserve = Number(LUSD_LIQUIDATION_RESERVE);
+const liquidationReserve = Number(SAI_LIQUIDATION_RESERVE);
 const maximumBorrowingRate = Number(MAXIMUM_BORROWING_RATE);
 
-const maxDebt = 10 * Number(LUSD_MINIMUM_DEBT);
+const maxDebt = 10 * Number(SAI_MINIMUM_DEBT);
 
 const trove = ({ collateral = 0, debt = 0 }) =>
   new Trove(Decimal.from(collateral), Decimal.from(debt));
@@ -114,8 +114,8 @@ describe("Trove", () => {
             (change.type === "adjustment" &&
               !change.params.depositCollateral?.isZero &&
               !change.params.withdrawCollateral?.isZero &&
-              !change.params.borrowLUSD?.isZero &&
-              !change.params.repayLUSD?.isZero)
+              !change.params.borrowSAI?.isZero &&
+              !change.params.repaySAI?.isZero)
           );
         })
       );
@@ -125,11 +125,11 @@ describe("Trove", () => {
       fc.assert(
         fc.property(fc.float({ max: maximumBorrowingRate }), borrowingRate => {
           const withMinimumDebt = Trove.recreate(
-            new Trove(Decimal.ONE, LUSD_MINIMUM_DEBT),
+            new Trove(Decimal.ONE, SAI_MINIMUM_DEBT),
             borrowingRate
           );
 
-          const ret = Trove.create(withMinimumDebt, borrowingRate).debt.gte(LUSD_MINIMUM_DEBT);
+          const ret = Trove.create(withMinimumDebt, borrowingRate).debt.gte(SAI_MINIMUM_DEBT);
 
           if (!ret) {
             console.log(`${Trove.create(withMinimumDebt, borrowingRate).debt}`);

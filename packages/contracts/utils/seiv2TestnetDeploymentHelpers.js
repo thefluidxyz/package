@@ -68,7 +68,7 @@ class SEIV2TestnetDeploymentHelper {
     return contract
   }
 
-  async deployLiquityCoreSEIV2Testnet(tellorMasterAddr, deploymentState) {
+  async deployFluidCoreSEIV2Testnet(tellorMasterAddr, deploymentState) {
     // Get contract factories
     const priceFeedFactory = await this.getFactory("PriceFeed")
     const sortedTrovesFactory = await this.getFactory("SortedTroves")
@@ -80,7 +80,7 @@ class SEIV2TestnetDeploymentHelper {
     const collSurplusPoolFactory = await this.getFactory("CollSurplusPool")
     const borrowerOperationsFactory = await this.getFactory("BorrowerOperations")
     const hintHelpersFactory = await this.getFactory("HintHelpers")
-    const lusdTokenFactory = await this.getFactory("LUSDToken")
+    const saiTokenFactory = await this.getFactory("SAIToken")
     const tellorCallerFactory = await this.getFactory("TellorCaller")
 
     // Deploy txs
@@ -96,16 +96,16 @@ class SEIV2TestnetDeploymentHelper {
     const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState)
     const tellorCaller = await this.loadOrDeploy(tellorCallerFactory, 'tellorCaller', deploymentState, [tellorMasterAddr])
 
-    const lusdTokenParams = [
+    const saiTokenParams = [
       troveManager.address,
       stabilityPool.address,
       borrowerOperations.address
     ]
-    const lusdToken = await this.loadOrDeploy(
-      lusdTokenFactory,
-      'lusdToken',
+    const saiToken = await this.loadOrDeploy(
+      saiTokenFactory,
+      'saiToken',
       deploymentState,
-      lusdTokenParams
+      saiTokenParams
     )
 
     if (!this.configParams.SEIV2SCAN_BASE_URL) {
@@ -122,12 +122,12 @@ class SEIV2TestnetDeploymentHelper {
       await this.verifyContract('borrowerOperations', deploymentState)
       await this.verifyContract('hintHelpers', deploymentState)
       await this.verifyContract('tellorCaller', deploymentState, [tellorMasterAddr])
-      await this.verifyContract('lusdToken', deploymentState, lusdTokenParams)
+      await this.verifyContract('saiToken', deploymentState, saiTokenParams)
     }
 
     const coreContracts = {
       priceFeed,
-      lusdToken,
+      saiToken,
       sortedTroves,
       troveManager,
       activePool,
@@ -143,23 +143,23 @@ class SEIV2TestnetDeploymentHelper {
   }
 
   async deployPriceFeedSEIV2Testnet(deploymentState) {
-    const multicall = new ethers.Contract("0xEe8d287B844959ADe40d718Dc23077ba920e2f07", multiCallABI.multiCall.abi, this.deployerWallet)
-    const priceFeedInterface = new ethers.utils.Interface(priceFeedABI.priceFeed.abi)
-    const calls = [
-      ["0x1Fc8970d71c365c3d1A0D10Fc6B3Ca50bc42f78b", priceFeedInterface.encodeFunctionData("latestAnswer", [])]
-    ]
-    const tx = await multicall.getEthBalance("0x552594b83058882C2263DBe23235477f63e7D60B");
-    // const tx = await multicall.callStatic.aggregate(calls);
-    // await tx.wait()
-    console.log (tx, ">>>>>>>>>>>>>>>>>")
+    // const multicall = new ethers.Contract("0xEe8d287B844959ADe40d718Dc23077ba920e2f07", multiCallABI.multiCall.abi, this.deployerWallet)
+    // const priceFeedInterface = new ethers.utils.Interface(priceFeedABI.priceFeed.abi)
+    // const calls = [
+    //   ["0x1Fc8970d71c365c3d1A0D10Fc6B3Ca50bc42f78b", priceFeedInterface.encodeFunctionData("latestAnswer", [])]
+    // ]
+    // const tx = await multicall.getEthBalance("0x552594b83058882C2263DBe23235477f63e7D60B");
+    // // const tx = await multicall.callStatic.aggregate(calls);
+    // // await tx.wait()
+    // console.log (tx, ">>>>>>>>>>>>>>>>>")
 
-    const lusdToken = new ethers.Contract("0x36B820c7A8ed89AA5b894C5fD1CeaA674ae79E3E", multiCallABI.multiCall.abi, this.deployerWallet)
+    // const saiToken = new ethers.Contract("0x36B820c7A8ed89AA5b894C5fD1CeaA674ae79E3E", multiCallABI.multiCall.abi, this.deployerWallet)
 
 
     const seiOraclePriceFeedFactory = await this.getFactory("SEIOraclePriceFeed")
     const seiOraclePriceFeed = await this.loadOrDeploy(seiOraclePriceFeedFactory, 'seiOraclePriceFeed', deploymentState)
-    const lusdOraclePriceFeedFactory = await this.getFactory("LUSDOraclePriceFeed")
-    const lusdOraclePriceFeed = await this.loadOrDeploy(lusdOraclePriceFeedFactory, 'lusdOraclePriceFeed', deploymentState)
+    const saiOraclePriceFeedFactory = await this.getFactory("SAIOraclePriceFeed")
+    const saiOraclePriceFeed = await this.loadOrDeploy(saiOraclePriceFeedFactory, 'saiOraclePriceFeed', deploymentState)
     const tellorMasterFactory = await this.getFactory("TellorMaster")
     const tellorMaster = await this.loadOrDeploy(tellorMasterFactory, 'tellorMaster', deploymentState)
 
@@ -169,56 +169,57 @@ class SEIV2TestnetDeploymentHelper {
         await this.verifyContract('seiOraclePriceFeed', deploymentState)
         await this.verifyContract('tellorMaster', deploymentState)
     }
-    const LQTYContracts = {
+    const FLOContracts = {
         seiOraclePriceFeed,
-        lusdOraclePriceFeed,
+        saiOraclePriceFeed,
         tellorMaster,
     }
-    return LQTYContracts
+    return FLOContracts
   }
 
-  async deployLQTYContractsSEIV2Testnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
-    const lqtyStakingFactory = await this.getFactory("LQTYStaking")
+  async deployFLOContractsSEIV2Testnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
+    const floStakingFactory = await this.getFactory("FLOStaking")
     const lockupContractFactory_Factory = await this.getFactory("LockupContractFactory")
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
-    const lqtyTokenFactory = await this.getFactory("LQTYToken")
+    const floTokenFactory = await this.getFactory("FLOToken")
 
-    const lqtyStaking = await this.loadOrDeploy(lqtyStakingFactory, 'lqtyStaking', deploymentState)
+    const floStaking = await this.loadOrDeploy(floStakingFactory, 'floStaking', deploymentState)
     const lockupContractFactory = await this.loadOrDeploy(lockupContractFactory_Factory, 'lockupContractFactory', deploymentState)
     const communityIssuance = await this.loadOrDeploy(communityIssuanceFactory, 'communityIssuance', deploymentState)
 
-    // Deploy LQTY Token, passing Community Issuance and Factory addresses to the constructor
-    const lqtyTokenParams = [
+    // Deploy FLO Token, passing Community Issuance and Factory addresses to the constructor
+    const floTokenParams = [
       communityIssuance.address,
-      lqtyStaking.address,
+      floStaking.address,
       lockupContractFactory.address,
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
     ]
-    const lqtyToken = await this.loadOrDeploy(
-      lqtyTokenFactory,
-      'lqtyToken',
+
+    const floToken = await this.loadOrDeploy(
+      floTokenFactory,
+      'floToken',
       deploymentState,
-      lqtyTokenParams
+      floTokenParams
     )
 
     if (!this.configParams.SEIV2SCAN_BASE_URL) {
       console.log('No SEIV2Testnet Url defined, skipping verification')
     } else {
-      await this.verifyContract('lqtyStaking', deploymentState)
+      await this.verifyContract('floStaking', deploymentState)
       await this.verifyContract('lockupContractFactory', deploymentState)
       await this.verifyContract('communityIssuance', deploymentState)
-      await this.verifyContract('lqtyToken', deploymentState, lqtyTokenParams)
+      await this.verifyContract('floToken', deploymentState, floTokenParams)
     }
 
-    const LQTYContracts = {
-      lqtyStaking,
+    const FLOContracts = {
+      floStaking,
       lockupContractFactory,
       communityIssuance,
-      lqtyToken
+      floToken
     }
-    return LQTYContracts
+    return FLOContracts
   }
 
   async deployUnipoolSEIV2Testnet(deploymentState) {
@@ -234,11 +235,11 @@ class SEIV2TestnetDeploymentHelper {
     return unipool
   }
 
-  async deployMultiTroveGetterSEIV2Testnet(liquityCore, deploymentState) {
+  async deployMultiTroveGetterSEIV2Testnet(fluidCore, deploymentState) {
     const multiTroveGetterFactory = await this.getFactory("MultiTroveGetter")
     const multiTroveGetterParams = [
-      liquityCore.troveManager.address,
-      liquityCore.sortedTroves.address
+      fluidCore.troveManager.address,
+      fluidCore.sortedTroves.address
     ]
     const multiTroveGetter = await this.loadOrDeploy(
       multiTroveGetterFactory,
@@ -262,7 +263,7 @@ class SEIV2TestnetDeploymentHelper {
     return owner == ZERO_ADDRESS
   }
   // Connect contracts to their dependencies
-  async connectCoreContractsSEIV2Testnet(contracts, LQTYContracts, chainlinkProxyAddress) {
+  async connectCoreContractsSEIV2Testnet(contracts, FLOContracts, chainlinkProxyAddress) {
     const gasPrice = this.configParams.GAS_PRICE
 
     // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
@@ -288,10 +289,10 @@ class SEIV2TestnetDeploymentHelper {
         contracts.gasPool.address,
         contracts.collSurplusPool.address,
         contracts.priceFeed.address,
-        contracts.lusdToken.address,
+        contracts.saiToken.address,
         contracts.sortedTroves.address,
-        LQTYContracts.lqtyToken.address,
-        LQTYContracts.lqtyStaking.address,
+        FLOContracts.floToken.address,
+        FLOContracts.floStaking.address,
 	{gasPrice}
       ))
 
@@ -306,8 +307,8 @@ class SEIV2TestnetDeploymentHelper {
         contracts.collSurplusPool.address,
         contracts.priceFeed.address,
         contracts.sortedTroves.address,
-        contracts.lusdToken.address,
-        LQTYContracts.lqtyStaking.address,
+        contracts.saiToken.address,
+        FLOContracts.floStaking.address,
 	{gasPrice}
       ))
 
@@ -317,10 +318,10 @@ class SEIV2TestnetDeploymentHelper {
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
         contracts.activePool.address,
-        contracts.lusdToken.address,
+        contracts.saiToken.address,
         contracts.sortedTroves.address,
         contracts.priceFeed.address,
-        LQTYContracts.communityIssuance.address,
+        FLOContracts.communityIssuance.address,
 	{gasPrice}
       ))
 
@@ -357,37 +358,37 @@ class SEIV2TestnetDeploymentHelper {
       ))
   }
 
-  async connectLQTYContractsSEIV2Testnet(LQTYContracts) {
+  async connectFLOContractsSEIV2Testnet(FLOContracts) {
     const gasPrice = this.configParams.GAS_PRICE
-    // Set LQTYToken address in LCF
-    await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address, {gasPrice}))
+    // Set FLOToken address in LCF
+    await this.isOwnershipRenounced(FLOContracts.floStaking) ||
+      await this.sendAndWaitForTransaction(FLOContracts.lockupContractFactory.setFLOTokenAddress(FLOContracts.floToken.address, {gasPrice}))
   }
 
-  async connectLQTYContractsToCoreSEIV2Testnet(LQTYContracts, coreContracts) {
+  async connectFLOContractsToCoreSEIV2Testnet(FLOContracts, coreContracts) {
     const gasPrice = this.configParams.GAS_PRICE
-    await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.lqtyStaking.setAddresses(
-        LQTYContracts.lqtyToken.address,
-        coreContracts.lusdToken.address,
+    await this.isOwnershipRenounced(FLOContracts.floStaking) ||
+      await this.sendAndWaitForTransaction(FLOContracts.floStaking.setAddresses(
+        FLOContracts.floToken.address,
+        coreContracts.saiToken.address,
         coreContracts.troveManager.address, 
         coreContracts.borrowerOperations.address,
         coreContracts.activePool.address,
 	{gasPrice}
       ))
 
-    await this.isOwnershipRenounced(LQTYContracts.communityIssuance) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.communityIssuance.setAddresses(
-        LQTYContracts.lqtyToken.address,
+    await this.isOwnershipRenounced(FLOContracts.communityIssuance) ||
+      await this.sendAndWaitForTransaction(FLOContracts.communityIssuance.setAddresses(
+        FLOContracts.floToken.address,
         coreContracts.stabilityPool.address,
 	{gasPrice}
       ))
   }
 
-  async connectUnipoolSEIV2Testnet(uniPool, LQTYContracts, LUSDWETHPairAddr, duration) {
+  async connectUnipoolSEIV2Testnet(uniPool, FLOContracts, SAIWETHPairAddr, duration) {
     const gasPrice = this.configParams.GAS_PRICE
     await this.isOwnershipRenounced(uniPool) ||
-      await this.sendAndWaitForTransaction(uniPool.setParams(LQTYContracts.lqtyToken.address, LUSDWETHPairAddr, duration, {gasPrice}))
+      await this.sendAndWaitForTransaction(uniPool.setParams(FLOContracts.floToken.address, SAIWETHPairAddr, duration, {gasPrice}))
   }
 
   // --- Verify on Ethrescan ---

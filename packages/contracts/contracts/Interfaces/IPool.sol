@@ -7,20 +7,20 @@ interface IPool {
     
     // --- Events ---
     
-    event ETHBalanceUpdated(uint _newBalance);
-    event LUSDBalanceUpdated(uint _newBalance);
+    event SEIBalanceUpdated(uint _newBalance);
+    event SAIBalanceUpdated(uint _newBalance);
     event ActivePoolAddressChanged(address _newActivePoolAddress);
     event DefaultPoolAddressChanged(address _newDefaultPoolAddress);
     event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
-    event EtherSent(address _to, uint _amount);
+    event SeiSent(address _to, uint _amount);
 
     // --- Functions ---
     
-    function getETH() external view returns (uint);
+    function getSEI() external view returns (uint);
 
-    function getLUSDDebt() external view returns (uint);
+    function getSAIDebt() external view returns (uint);
 
-    function increaseLUSDDebt(uint _amount) external;
+    function increaseSAIDebt(uint _amount) external;
 
-    function decreaseLUSDDebt(uint _amount) external;
+    function decreaseSAIDebt(uint _amount) external;
 }

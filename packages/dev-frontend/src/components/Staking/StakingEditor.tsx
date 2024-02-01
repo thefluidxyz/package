@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
 
-import { Decimal, Decimalish, Difference, FluidStoreState, LQTYStake } from "@fluid/lib-base";
+import { Decimal, Decimalish, Difference, FluidStoreState, FLOStake } from "@fluid/lib-base";
 import { useLiquitySelector } from "@fluid/lib-react";
 
 import { COIN, GT } from "../../strings";
@@ -12,15 +12,15 @@ import { LoadingOverlay } from "../LoadingOverlay";
 
 import { useStakingView } from "./context/StakingViewContext";
 
-const select = ({ lqtyBalance, totalStakedLQTY }: FluidStoreState) => ({
-  lqtyBalance,
-  totalStakedLQTY
+const select = ({ floBalance, totalStakedFLO }: FluidStoreState) => ({
+  floBalance,
+  totalStakedFLO
 });
 
 type StakingEditorProps = {
   title: string;
-  originalStake: LQTYStake;
-  editedLQTY: Decimal;
+  originalStake: FLOStake;
+  editedFLO: Decimal;
   dispatch: (action: { type: "setStake"; newValue: Decimalish } | { type: "revert" }) => void;
 };
 
@@ -28,24 +28,24 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
   children,
   title,
   originalStake,
-  editedLQTY,
+  editedFLO,
   dispatch
 }) => {
-  const { lqtyBalance, totalStakedLQTY } = useLiquitySelector(select);
+  const { floBalance, totalStakedFLO } = useLiquitySelector(select);
   const { changePending } = useStakingView();
   const editingState = useState<string>();
 
-  const edited = !editedLQTY.eq(originalStake.stakedLQTY);
+  const edited = !editedFLO.eq(originalStake.stakedFLO);
 
-  const maxAmount = originalStake.stakedLQTY.add(lqtyBalance);
-  const maxedOut = editedLQTY.eq(maxAmount);
+  const maxAmount = originalStake.stakedFLO.add(floBalance);
+  const maxedOut = editedFLO.eq(maxAmount);
 
-  const totalStakedLQTYAfterChange = totalStakedLQTY.sub(originalStake.stakedLQTY).add(editedLQTY);
+  const totalStakedFLOAfterChange = totalStakedFLO.sub(originalStake.stakedFLO).add(editedFLO);
 
-  const originalPoolShare = originalStake.stakedLQTY.mulDiv(100, totalStakedLQTY);
-  const newPoolShare = editedLQTY.mulDiv(100, totalStakedLQTYAfterChange);
+  const originalPoolShare = originalStake.stakedFLO.mulDiv(100, totalStakedFLO);
+  const newPoolShare = editedFLO.mulDiv(100, totalStakedFLOAfterChange);
   const poolShareChange =
-    originalStake.stakedLQTY.nonZero && Difference.between(newPoolShare, originalPoolShare).nonZero;
+    originalStake.stakedFLO.nonZero && Difference.between(newPoolShare, originalPoolShare).nonZero;
 
   return (
     <Card>
@@ -65,13 +65,13 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
       <Box sx={{ p: [2, 3] }}>
         <EditableRow
           label="Stake"
-          inputId="stake-lqty"
-          amount={editedLQTY.prettify()}
+          inputId="stake-flo"
+          amount={editedFLO.prettify()}
           maxAmount={maxAmount.toString()}
           maxedOut={maxedOut}
           unit={GT}
           {...{ editingState }}
-          editedAmount={editedLQTY.toString(2)}
+          editedAmount={editedFLO.toString(2)}
           setEditedAmount={newValue => dispatch({ type: "setStake", newValue })}
         />
 
@@ -100,9 +100,9 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
 
             <StaticRow
               label="Issuance gain"
-              inputId="stake-gain-lusd"
-              amount={originalStake.lusdGain.prettify()}
-              color={originalStake.lusdGain.nonZero && "success"}
+              inputId="stake-gain-sai"
+              amount={originalStake.saiGain.prettify()}
+              color={originalStake.saiGain.nonZero && "success"}
               unit={COIN}
             />
           </>

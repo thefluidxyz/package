@@ -19,20 +19,20 @@ const select = ({
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    saiInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
+    totalStakedFLO,
     frontend
   }: FluidStoreState) => ({
     trove,
     numberOfTroves,
     price,
     total,
-    lusdInStabilityPool,
+    saiInStabilityPool,
     borrowingRate,
     redemptionRate,
-    totalStakedLQTY,
+    totalStakedFLO,
     kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
   });
 
@@ -48,15 +48,15 @@ export const ReadOnlyStats: React.FC = () => {
     // trove,
     // numberOfTroves,
     price,
-    lusdInStabilityPool,
+    saiInStabilityPool,
     total,
     borrowingRate,
-    // totalStakedLQTY,
+    // totalStakedFLO,
     // kickbackRate
   } = useLiquitySelector(select);
 
-  // const lusdInStabilityPoolPct =
-  //   total.debt.nonZero && new Percent(lusdInStabilityPool.div(total.debt));
+  // const saiInStabilityPoolPct =
+  //   total.debt.nonZero && new Percent(saiInStabilityPool.div(total.debt));
   // const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
   const borrowingFeePct = new Percent(borrowingRate);
   // const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
@@ -76,7 +76,7 @@ export const ReadOnlyStats: React.FC = () => {
           <DisabledEditableRow
             label="Minted SAI"
             inputId="trove-minted-sai"
-            amount={total.debt.shorten() + " / " + lusdInStabilityPool.shorten()}
+            amount={total.debt.shorten() + " / " + saiInStabilityPool.shorten()}
             unit=""
           />
           <DisabledEditableRow

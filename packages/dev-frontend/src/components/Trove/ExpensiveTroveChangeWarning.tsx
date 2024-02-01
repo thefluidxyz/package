@@ -34,7 +34,9 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
       let cancelled = false;
 
       const timeoutId = setTimeout(async () => {
-        const populatedTx = await (troveChange.type === "creation"
+        let populatedTx
+        try {
+        populatedTx = await (troveChange.type === "creation"
           ? fluid.populate.openTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
@@ -43,13 +45,15 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             }));
-
         if (!cancelled) {
           setGasEstimationState({ type: "complete", populatedTx });
           console.log(
             "Estimated TX cost: " +
               Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
           );
+        }
+        } catch (e) {
+          setGasEstimationState({ type: "idle" });
         }
       }, 333);
 
@@ -66,8 +70,8 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   if (
     troveChange &&
     gasEstimationState.type === "complete" &&
-    gasEstimationState.populatedTx.gasHeadroom !== undefined &&
-    gasEstimationState.populatedTx.gasHeadroom >= 200000
+    gasEstimationState?.populatedTx?.gasHeadroom !== undefined &&
+    gasEstimationState?.populatedTx?.gasHeadroom >= 200000
   ) {
     return troveChange.type === "creation" ? (
       <Warning>

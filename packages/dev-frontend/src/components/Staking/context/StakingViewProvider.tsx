@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { FluidStoreState, LQTYStake } from "@fluid/lib-base";
+import { FluidStoreState, FLOStake } from "@fluid/lib-base";
 import { LiquityStoreUpdate, useLiquityReducer } from "@fluid/lib-react";
 
 import { useMyTransactionState } from "../../Transaction";
@@ -13,13 +13,13 @@ type StakingViewProviderAction =
   | { type: "startChange" | "abortChange" };
 
 type StakingViewProviderState = {
-  lqtyStake: LQTYStake;
+  floStake: FLOStake;
   changePending: boolean;
   adjusting: boolean;
 };
 
-const init = ({ lqtyStake }: FluidStoreState): StakingViewProviderState => ({
-  lqtyStake,
+const init = ({ floStake }: FluidStoreState): StakingViewProviderState => ({
+  floStake,
   changePending: false,
   adjusting: false
 });
@@ -46,19 +46,19 @@ const reduce = (
 
     case "updateStore": {
       const {
-        oldState: { lqtyStake: oldStake },
-        stateChange: { lqtyStake: updatedStake }
+        oldState: { floStake: oldStake },
+        stateChange: { floStake: updatedStake }
       } = action;
 
       if (updatedStake) {
         const changeCommitted =
-          !updatedStake.stakedLQTY.eq(oldStake.stakedLQTY) ||
+          !updatedStake.stakedFLO.eq(oldStake.stakedFLO) ||
           updatedStake.collateralGain.lt(oldStake.collateralGain) ||
-          updatedStake.lusdGain.lt(oldStake.lusdGain);
+          updatedStake.saiGain.lt(oldStake.saiGain);
 
         return {
           ...state,
-          lqtyStake: updatedStake,
+          floStake: updatedStake,
           adjusting: false,
           changePending: changeCommitted ? false : state.changePending
         };
@@ -71,7 +71,7 @@ const reduce = (
 
 export const StakingViewProvider: React.FC = ({ children }) => {
   const stakingTransactionState = useMyTransactionState("stake");
-  const [{ adjusting, changePending, lqtyStake }, dispatch] = useLiquityReducer(reduce, init);
+  const [{ adjusting, changePending, floStake }, dispatch] = useLiquityReducer(reduce, init);
 
   useEffect(() => {
     if (
@@ -90,7 +90,7 @@ export const StakingViewProvider: React.FC = ({ children }) => {
   return (
     <StakingViewContext.Provider
       value={{
-        view: adjusting ? "ADJUSTING" : lqtyStake.isEmpty ? "NONE" : "ACTIVE",
+        view: adjusting ? "ADJUSTING" : floStake.isEmpty ? "NONE" : "ACTIVE",
         changePending,
         dispatch
       }}

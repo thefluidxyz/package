@@ -22,6 +22,7 @@
     "react-dom": "17.0.2",
     "react-modal": "^3.15.1",
     "react-router-dom": "5.2.0",
+    "react-toastify": "9.1.1",
     "recharts": "2.1.10",
     "theme-ui": "0.6.0-canary.1544.5359f8a1e408a4dfeb74a9ae39688270286e534a.0",
     "wagmi": "^0.12.0"

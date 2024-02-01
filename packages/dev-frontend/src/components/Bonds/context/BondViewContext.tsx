@@ -8,9 +8,9 @@ import type {
   BondTransactionStatuses,
   ProtocolInfo,
   OptimisticBond,
-  BLusdAmmTokenIndex,
+  BSaiAmmTokenIndex,
   Addresses,
-  BLusdLpRewards
+  BSaiLpRewards
 } from "./transitions";
 import { PENDING_STATUS, CANCELLED_STATUS, CLAIMED_STATUS } from "../lexicon";
 import { Decimal } from "@fluid/lib-base";
@@ -24,39 +24,39 @@ export type BondViewContextType = {
   bonds?: Bond[];
   selectedBond?: Bond;
   optimisticBond?: OptimisticBond;
-  bLusdBalance?: Decimal;
-  lusdBalance?: Decimal;
+  bSaiBalance?: Decimal;
+  saiBalance?: Decimal;
   lpTokenBalance?: Decimal;
   stakedLpTokenBalance?: Decimal;
   lpTokenSupply?: Decimal;
-  bLusdAmmBLusdBalance?: Decimal;
-  bLusdAmmLusdBalance?: Decimal;
+  bSaiAmmBSaiBalance?: Decimal;
+  bSaiAmmSaiBalance?: Decimal;
   statuses: BondTransactionStatuses;
   isInfiniteBondApproved: boolean;
   isSynchronizing: boolean;
-  getLusdFromFaucet: () => Promise<void>;
+  getSaiFromFaucet: () => Promise<void>;
   simulatedProtocolInfo?: ProtocolInfo;
   setSimulatedMarketPrice: (marketPrice: Decimal) => void;
   resetSimulatedMarketPrice: () => void;
   hasFoundContracts: boolean;
-  isBLusdApprovedWithBlusdAmm: boolean;
-  isLusdApprovedWithBlusdAmm: boolean;
-  isLusdApprovedWithAmmZapper: boolean;
-  isBLusdApprovedWithAmmZapper: boolean;
-  isBLusdLpApprovedWithAmmZapper: boolean;
-  isBLusdLpApprovedWithGauge: boolean;
-  inputToken: BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD;
-  isInputTokenApprovedWithBLusdAmm: boolean;
-  getExpectedSwapOutput: (inputToken: BLusdAmmTokenIndex, inputAmount: Decimal) => Promise<Decimal>;
-  getExpectedLpTokens: (bLusdAmount: Decimal, lusdAmount: Decimal) => Promise<Decimal>;
+  isBSaiApprovedWithBsaiAmm: boolean;
+  isSaiApprovedWithBsaiAmm: boolean;
+  isSaiApprovedWithAmmZapper: boolean;
+  isBSaiApprovedWithAmmZapper: boolean;
+  isBSaiLpApprovedWithAmmZapper: boolean;
+  isBSaiLpApprovedWithGauge: boolean;
+  inputToken: BSaiAmmTokenIndex.BSAI | BSaiAmmTokenIndex.SAI;
+  isInputTokenApprovedWithBSaiAmm: boolean;
+  getExpectedSwapOutput: (inputToken: BSaiAmmTokenIndex, inputAmount: Decimal) => Promise<Decimal>;
+  getExpectedLpTokens: (bSaiAmount: Decimal, saiAmount: Decimal) => Promise<Decimal>;
   getExpectedWithdrawal: (
     burnLp: Decimal,
-    output: BLusdAmmTokenIndex | "both"
-  ) => Promise<Map<BLusdAmmTokenIndex, Decimal>>;
+    output: BSaiAmmTokenIndex | "both"
+  ) => Promise<Map<BSaiAmmTokenIndex, Decimal>>;
   isBootstrapPeriodActive?: boolean;
   hasLoaded: boolean;
   addresses: Addresses;
-  lpRewards: BLusdLpRewards | undefined;
+  lpRewards: BSaiLpRewards | undefined;
 };
 
 export const BondViewContext = createContext<BondViewContextType | null>(null);

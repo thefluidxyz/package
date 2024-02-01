@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useCallback } from "react";
 import { Provider, TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
 import { hexDataSlice, hexDataLength } from "@ethersproject/bytes";
 import { defaultAbiCoder } from "@ethersproject/abi";
-
+import { toast } from 'react-toastify';
 import "react-circular-progressbar/dist/styles.css";
 
 import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@fluid/lib-ethers";
@@ -13,7 +13,7 @@ import { useFluid } from "../hooks/FluidContext";
 import { Tooltip } from "./Tooltip";
 import type { TooltipProps } from "./Tooltip";
 
-import { TransactionStatus } from "./TransactionStatus";
+// import { TransactionStatus } from "./TransactionStatus";
 
 type TransactionIdle = {
   type: "idle";
@@ -129,9 +129,11 @@ export const useTransactionFunction = (
 
   const sendTransaction = useCallback(async () => {
     setTransactionState({ type: "waitingForApproval", id });
+    window.alert("$$$$$$$$$$$$")
 
     try {
       const tx = await send();
+      window.alert ("22222222222")
 
       setTransactionState({
         type: "waitingForConfirmation",
@@ -140,10 +142,13 @@ export const useTransactionFunction = (
       });
     } catch (error) {
       if (hasMessage(error) && error.message.includes("User denied transaction signature")) {
+        window.alert(">>>>")
+        window.alert(error?.message)
         setTransactionState({ type: "cancelled", id });
       } else {
         console.error(error);
-
+        window.alert(">>>>111")
+        window.alert(error)
         setTransactionState({
           type: "failed",
           id,
@@ -301,7 +306,6 @@ export const TransactionMonitor: React.FC = () => {
         }
       };
 
-      console.log(`Start monitoring tx ${txHash}`);
       waitForConfirmation();
 
       return () => {
@@ -323,6 +327,22 @@ export const TransactionMonitor: React.FC = () => {
       transactionState.type === "failed" ||
       transactionState.type === "cancelled"
     ) {
+      if (transactionState.type === "failed") {
+        toast(() => (
+          <div className="flex flex-row text-lg gap-2 text-[#F45348]">
+            <div className="flex flex-row mt-2 items-center w-[14px] h-[14px] bg-[#F45348] rounded-full"/>
+            Transaction failed. Please try again.
+          </div>
+        )) //toast.info(transactionState.error.message)
+      }
+      if (transactionState.type === "confirmed") {
+        toast(() => (
+          <div className="flex flex-row text-lg gap-2 text-[#BDFAE2]">
+            <div className="flex flex-row mt-2 items-center w-[14px] h-[14px] bg-[#BDFAE2] rounded-full"/>
+            Transaction completed.
+          </div>
+        ))
+      } 
       let cancelled = false;
 
       setTimeout(() => {
@@ -341,10 +361,20 @@ export const TransactionMonitor: React.FC = () => {
     return null;
   }
 
+  // if (transactionState.type === "failed") {
+  //   toast.info ("Transaction failed. Please try again.") //toast.info(transactionState.error.message)
+  //   return null
+  // }
+  // if (transactionState.type === "confirmed") {
+  //   toast.info("Transaction completed.")
+  //   return null
+  // } 
+  
   return (
-    <TransactionStatus
-      state={transactionState.type}
-      message={transactionState.type === "failed" ? transactionState.error.message : undefined}
-    />
+    // <TransactionStatus
+    //   state={transactionState.type}
+    //   message={transactionState.type === "failed" ? transactionState.error.message : undefined}
+    // />
+    <></>
   );
 };

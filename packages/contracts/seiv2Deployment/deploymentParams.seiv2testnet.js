@@ -1,8 +1,8 @@
 const externalAddrs  = {
   // https://data.chain.link/eth-usd
-  CHAINLINK_SEIUSD_PROXY: "0x11e4A6a60b4103e53Bc642c08bA18a4A5D20aa51", 
+  CHAINLINK_SEIUSD_PROXY: "0x29A2ce0f6E5CB41b9BfB9205F89b7aa341520487", 
   // https://docs.tellor.io/tellor/integration/reference-page
-  TELLOR_MASTER:"0x21710f957134c7F7Bd1c72002665DF8895206A1E",
+  TELLOR_MASTER:"0xf92870543C70a87D8D96525E92EB5d58D90BC17A",
   // https://uniswap.org/docs/v2/smart-contracts/factory/
   // UNISWAP_V2_FACTORY: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", // ethereum
   UNISWAP_V2_FACTORY: "0x5e1100ea18F918a4e9AB70694c6c554e1E940D32", // seiv2
@@ -13,9 +13,9 @@ const externalAddrs  = {
   // WSEI_ERC20: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // ethereum
 }
 
-const liquityAddrs = {
-  GENERAL_SAFE:"0x42d0b8efF2fFF1a70B57C8E96bE77C2e49A774c3", // to be passed to LQTYToken as the bounties/hackathons address
-  LQTY_SAFE:"0x42d0b8efF2fFF1a70B57C8E96bE77C2e49A774c3", // to be passed to LQTYToken as the LQTY multisig address
+const fluidAddrs = {
+  GENERAL_SAFE:"0x42d0b8efF2fFF1a70B57C8E96bE77C2e49A774c3", // to be passed to FLOToken as the bounties/hackathons address
+  FLO_SAFE:"0x42d0b8efF2fFF1a70B57C8E96bE77C2e49A774c3", // to be passed to FLOToken as the FLO multisig address
   DEPLOYER: "0x552594b83058882C2263DBe23235477f63e7D60B", // Mainnet REAL deployment address
   // DEPLOYER: '0x31c57298578f7508B5982062cfEc5ec8BD346247'
 }
@@ -40,7 +40,7 @@ const SEIV2SCAN_BASE_URL = 'https://testnet.seiv2scan.metabest.tech/address'
 
 module.exports = {
   externalAddrs,
-  liquityAddrs,
+  fluidAddrs,
   beneficiaries,
   OUTPUT_FILE,
   waitFunction,

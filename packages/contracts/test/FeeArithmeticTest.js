@@ -3,7 +3,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const { BNConverter } = require("../utils/BNConverter.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const FluidMathTester = artifacts.require("./FluidMathTester.sol")
 
 const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
@@ -334,17 +334,17 @@ contract('Fee arithmetic tests', async accounts => {
     troveManagerTester = await TroveManagerTester.new()
     TroveManagerTester.setAsDeployed(troveManagerTester)
 
-    mathTester = await LiquityMathTester.new()
-    LiquityMathTester.setAsDeployed(mathTester)
+    mathTester = await FluidMathTester.new()
+    FluidMathTester.setAsDeployed(mathTester)
   })
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+    contracts = await deploymentHelper.deployFluidCore()
+    const FLOContracts = await deploymentHelper.deployFLOContracts(bountyAddress, lpRewardsAddress, multisig)
 
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectFLOContracts(FLOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, FLOContracts)
+    await deploymentHelper.connectFLOContractsToCore(FLOContracts, contracts)
   })
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {

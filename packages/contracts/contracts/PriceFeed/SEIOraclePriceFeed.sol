@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-08-06
-*/
-
 pragma solidity 0.6.11;
 
 interface AggregatorV3Interface {
@@ -9,6 +5,7 @@ interface AggregatorV3Interface {
   function decimals() external view returns (uint8);
   function description() external view returns (string memory);
   function version() external view returns (uint256);
+  function setPrice(int256 _price) external;
 
   // getRoundData and latestRoundData should both raise "No data present"
   // if they do not have data to report, instead of returning unset values
@@ -37,6 +34,11 @@ interface AggregatorV3Interface {
 }
 
 contract SEIOraclePriceFeed is AggregatorV3Interface {
+  int256 internal price = 68790000;
+
+  function setPrice(int256 _price) external override{
+    price = _price;
+  }
 
   /**
    * @notice get data about a round. Consumers are encouraged to check
@@ -76,7 +78,7 @@ contract SEIOraclePriceFeed is AggregatorV3Interface {
       uint80 answeredInRound
     )
   {
-    return (_roundId, 68790000, block.timestamp - 10, block.timestamp - 10, _roundId);
+    return (_roundId, price, block.timestamp - 10, block.timestamp - 10, _roundId);
   }
 
   /**
@@ -114,7 +116,7 @@ contract SEIOraclePriceFeed is AggregatorV3Interface {
       uint80 answeredInRound
     )
   {
-    return (110680464442257320022, 69250000, block.timestamp - 10, block.timestamp - 10, 110680464442257320022);
+    return (110680464442257320022, price, block.timestamp - 10, block.timestamp - 10, 110680464442257320022);
   }
 
   /**
@@ -160,6 +162,6 @@ contract SEIOraclePriceFeed is AggregatorV3Interface {
     virtual
     returns (int256 answer)
   {
-    return 68698769;
+    return price;
   }
 }

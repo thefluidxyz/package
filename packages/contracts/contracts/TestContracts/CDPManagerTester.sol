@@ -10,15 +10,15 @@ for testing the parent's internal functions. */
 contract TroveManagerTester is TroveManager {
 
     function computeICR(uint _coll, uint _debt, uint _price) external pure returns (uint) {
-        return LiquityMath._computeCR(_coll, _debt, _price);
+        return FluidMath._computeCR(_coll, _debt, _price);
     }
 
     function getCollGasCompensation(uint _coll) external pure returns (uint) {
         return _getCollGasCompensation(_coll);
     }
 
-    function getLUSDGasCompensation() external pure returns (uint) {
-        return LUSD_GAS_COMPENSATION;
+    function getSAIGasCompensation() external pure returns (uint) {
+        return SAI_GAS_COMPENSATION;
     }
 
     function getCompositeDebt(uint _debt) external pure returns (uint) {
@@ -45,8 +45,8 @@ contract TroveManagerTester is TroveManager {
         baseRate = _baseRate;
     }
 
-    function callGetRedemptionFee(uint _ETHDrawn) external view returns (uint) {
-        _getRedemptionFee(_ETHDrawn);
+    function callGetRedemptionFee(uint _SEIDrawn) external view returns (uint) {
+        _getRedemptionFee(_SEIDrawn);
     }  
 
     function getActualDebtFromComposite(uint _debtVal) external pure returns (uint) {

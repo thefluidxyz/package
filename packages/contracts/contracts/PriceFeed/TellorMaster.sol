@@ -5,7 +5,7 @@ pragma solidity 0.6.11;
  @author Tellor Inc.
  @title TellorProxy
 * @dev The Transition contract links to the Oracle contract and
-* allows parties (like Liquity) to continue to use the master
+* allows parties (like fluid) to continue to use the master
 * address to access values which use legacy query IDs (request IDs). 
 */
 contract TellorMaster {

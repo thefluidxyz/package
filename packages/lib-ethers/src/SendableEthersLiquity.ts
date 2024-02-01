@@ -86,21 +86,21 @@ export class SendableEthersLiquity
     return this._populate.withdrawCollateral(amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.borrowLUSD} */
-  borrowLUSD(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.borrowSAI} */
+  borrowSAI(
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
-    return this._populate.borrowLUSD(amount, maxBorrowingRate, overrides).then(sendTransaction);
+    return this._populate.borrowSAI(amount, maxBorrowingRate, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.repayLUSD} */
-  repayLUSD(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.repaySAI} */
+  repaySAI(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<TroveAdjustmentDetails>> {
-    return this._populate.repayLUSD(amount, overrides).then(sendTransaction);
+    return this._populate.repaySAI(amount, overrides).then(sendTransaction);
   }
 
   /** @internal */
@@ -129,23 +129,23 @@ export class SendableEthersLiquity
       .then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.depositLUSDInStabilityPool} */
-  depositLUSDInStabilityPool(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.depositSAIInStabilityPool} */
+  depositSAIInStabilityPool(
     amount: Decimalish,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>> {
     return this._populate
-      .depositLUSDInStabilityPool(amount, frontendTag, overrides)
+      .depositSAIInStabilityPool(amount, frontendTag, overrides)
       .then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawLUSDFromStabilityPool} */
-  withdrawLUSDFromStabilityPool(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawSAIFromStabilityPool} */
+  withdrawSAIFromStabilityPool(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<StabilityDepositChangeDetails>> {
-    return this._populate.withdrawLUSDFromStabilityPool(amount, overrides).then(sendTransaction);
+    return this._populate.withdrawSAIFromStabilityPool(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawGainsFromStabilityPool} */
@@ -162,31 +162,31 @@ export class SendableEthersLiquity
     return this._populate.transferCollateralGainToTrove(overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.sendLUSD} */
-  sendLUSD(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.sendSAI} */
+  sendSAI(
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.sendLUSD(toAddress, amount, overrides).then(sendTransaction);
+    return this._populate.sendSAI(toAddress, amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.sendLQTY} */
-  sendLQTY(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.sendFLO} */
+  sendFLO(
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.sendLQTY(toAddress, amount, overrides).then(sendTransaction);
+    return this._populate.sendFLO(toAddress, amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.redeemLUSD} */
-  redeemLUSD(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.redeemSAI} */
+  redeemSAI(
     amount: Decimalish,
     maxRedemptionRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<RedemptionDetails>> {
-    return this._populate.redeemLUSD(amount, maxRedemptionRate, overrides).then(sendTransaction);
+    return this._populate.redeemSAI(amount, maxRedemptionRate, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @fluid/lib-base#SendableFluid.claimCollateralSurplus} */
@@ -196,20 +196,20 @@ export class SendableEthersLiquity
     return this._populate.claimCollateralSurplus(overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.stakeLQTY} */
-  stakeLQTY(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.stakeFLO} */
+  stakeFLO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.stakeLQTY(amount, overrides).then(sendTransaction);
+    return this._populate.stakeFLO(amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.unstakeLQTY} */
-  unstakeLQTY(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.unstakeFLO} */
+  unstakeFLO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.unstakeLQTY(amount, overrides).then(sendTransaction);
+    return this._populate.unstakeFLO(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawGainsFromStaking} */
@@ -260,11 +260,11 @@ export class SendableEthersLiquity
     return this._populate.unstakeUniTokens(amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawLQTYRewardFromLiquidityMining} */
-  withdrawLQTYRewardFromLiquidityMining(
+  /** {@inheritDoc @fluid/lib-base#SendableFluid.withdrawFLORewardFromLiquidityMining} */
+  withdrawFLORewardFromLiquidityMining(
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.withdrawLQTYRewardFromLiquidityMining(overrides).then(sendTransaction);
+    return this._populate.withdrawFLORewardFromLiquidityMining(overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @fluid/lib-base#SendableFluid.exitLiquidityMining} */

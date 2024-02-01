@@ -15,19 +15,19 @@ import {
   StaticRow
 } from "../../../Trove/Editor";
 import { useBondView } from "../../context/BondViewContext";
-import { BLusdAmmTokenIndex } from "../../context/transitions";
+import { BSaiAmmTokenIndex } from "../../context/transitions";
 
-const tokenSymbol: Record<BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD, string> = {
-  [BLusdAmmTokenIndex.BLUSD]: "bLUSD",
-  [BLusdAmmTokenIndex.LUSD]: "LUSD"
+const tokenSymbol: Record<BSaiAmmTokenIndex.BSAI | BSaiAmmTokenIndex.SAI, string> = {
+  [BSaiAmmTokenIndex.BSAI]: "bSAI",
+  [BSaiAmmTokenIndex.SAI]: "SAI"
 };
 
 const outputToken: Record<
-  BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD,
-  BLusdAmmTokenIndex.BLUSD | BLusdAmmTokenIndex.LUSD
+  BSaiAmmTokenIndex.BSAI | BSaiAmmTokenIndex.SAI,
+  BSaiAmmTokenIndex.BSAI | BSaiAmmTokenIndex.SAI
 > = {
-  [BLusdAmmTokenIndex.BLUSD]: BLusdAmmTokenIndex.LUSD,
-  [BLusdAmmTokenIndex.LUSD]: BLusdAmmTokenIndex.BLUSD
+  [BSaiAmmTokenIndex.BSAI]: BSaiAmmTokenIndex.SAI,
+  [BSaiAmmTokenIndex.SAI]: BSaiAmmTokenIndex.BSAI
 };
 
 const marginalAmount = Decimal.ONE.div(1000);
@@ -47,16 +47,16 @@ export const SwapPane: React.FC = () => {
     dispatchEvent,
     statuses,
     inputToken,
-    lusdBalance,
-    bLusdBalance,
-    isInputTokenApprovedWithBLusdAmm,
-    bLusdAmmBLusdBalance,
-    bLusdAmmLusdBalance,
+    saiBalance,
+    bSaiBalance,
+    isInputTokenApprovedWithBSaiAmm,
+    bSaiAmmBSaiBalance,
+    bSaiAmmSaiBalance,
     getExpectedSwapOutput
   } = useBondView();
   const editingState = useState<string>();
   const inputTokenBalance =
-    (inputToken === BLusdAmmTokenIndex.BLUSD ? bLusdBalance : lusdBalance) ?? Decimal.ZERO;
+    (inputToken === BSaiAmmTokenIndex.BSAI ? bSaiBalance : saiBalance) ?? Decimal.ZERO;
   const [inputAmount, setInputAmount] = useState<Decimal>(Decimal.ZERO);
   const [outputAmount, setOutputAmount] = useState<Decimal>();
   const [exchangeRate, setExchangeRate] = useState<Decimal>();
@@ -78,7 +78,7 @@ export const SwapPane: React.FC = () => {
   const isSlippageToleranceHigh = customSlippageTolerance?.gt(0.05);
 
   // Used in dependency list of effect to recalculate output amount in case of pool changes
-  const poolState = `${bLusdAmmBLusdBalance},${bLusdAmmLusdBalance}`;
+  const poolState = `${bSaiAmmBSaiBalance},${bSaiAmmSaiBalance}`;
 
   const handleDismiss = () => {
     dispatchEvent("ABORT_PRESSED");
@@ -160,7 +160,7 @@ export const SwapPane: React.FC = () => {
     <>
       <Heading as="h2" sx={{ pt: 2, pb: 3, px: 2 }}>
         <Flex sx={{ justifyContent: "center" }}>
-          {inputToken === BLusdAmmTokenIndex.BLUSD ? <>Sell</> : <>Buy</>} bLUSD
+          {inputToken === BSaiAmmTokenIndex.BSAI ? <>Sell</> : <>Buy</>} bSAI
         </Flex>
         <Close
           onClick={handleDismiss}
@@ -319,7 +319,7 @@ export const SwapPane: React.FC = () => {
         </ErrorDescription>
       )}
 
-      {(bLusdAmmBLusdBalance?.isZero || bLusdAmmLusdBalance?.isZero) && (
+      {(bSaiAmmBSaiBalance?.isZero || bSaiAmmSaiBalance?.isZero) && (
         <ErrorDescription>No liquidity in pool yet. Swap unavailable.</ErrorDescription>
       )}
 
@@ -340,7 +340,7 @@ export const SwapPane: React.FC = () => {
           Back
         </Button>
 
-        {isInputTokenApprovedWithBLusdAmm ? (
+        {isInputTokenApprovedWithBSaiAmm ? (
           <Button
             variant="primary"
             onClick={handleConfirmPressed}

@@ -34,12 +34,12 @@ import "./Dependencies/console.sol";
 * https://github.com/livepeer/protocol/blob/master/contracts/libraries/SortedDoublyLL.sol
 *
 *
-* Changes made in the Liquity implementation:
+* Changes made in the Fluid implementation:
 *
 * - Keys have been removed from nodes
 *
 * - Ordering checks for insertion are performed by comparing an NICR argument to the current NICR, calculated at runtime.
-*   The list relies on the property that ordering by ICR is maintained as the ETH:USD price varies.
+*   The list relies on the property that ordering by ICR is maintained as the SEI:USD price varies.
 *
 * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
 */

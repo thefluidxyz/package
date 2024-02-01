@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { Flex, Button } from "theme-ui";
 
-import { FluidStoreState, Decimal, Trove, Decimalish, LUSD_MINIMUM_DEBT } from "@fluid/lib-base";
+import { FluidStoreState, Decimal, Trove, Decimalish, SAI_MINIMUM_DEBT } from "@fluid/lib-base";
 
 import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@fluid/lib-react";
-
 // import { ActionDescription } from "../ActionDescription";
 import { useMyTransactionState } from "../Transaction";
 
@@ -84,7 +83,7 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
     case "addMinimumDebt":
       return {
         ...state,
-        edited: edited.setDebt(LUSD_MINIMUM_DEBT),
+        edited: edited.setDebt(SAI_MINIMUM_DEBT),
         addedMinimumDebt: true
       };
 
@@ -135,8 +134,8 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
 const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
   const change = original.whatChanged(edited, borrowingRate);
 
-  if (change && change.type !== "invalidCreation" && change.params.borrowLUSD) {
-    return change.params.borrowLUSD.mul(borrowingRate);
+  if (change && change.type !== "invalidCreation" && change.params.borrowSAI) {
+    return change.params.borrowSAI.mul(borrowingRate);
   } else {
     return Decimal.ZERO;
   }
@@ -171,7 +170,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
   const borrowingRate = fees.borrowingRate();
   const maxBorrowingRate = borrowingRate.add(0.005); // WONT-FIX slippage tolerance
 
-  const [validChange, ] = validateTroveChange(
+  const [validChange, description] = validateTroveChange(
     original,
     edited,
     borrowingRate,
@@ -210,34 +209,23 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       changePending={changePending}
       dispatch={dispatch}
     >
-      {/* {description ??
-        (openingNewTrove ? (
-          <ActionDescription>
-            Start by entering the amount of ETH you'd like to deposit as collateral.
-          </ActionDescription>
-        ) : (
-          <ActionDescription>
-            Adjust your Trove by modifying its collateral, debt, or both.
-          </ActionDescription>
-        ))} */}
-
+      {description ?? <div />}
       <Flex variant="layout.actions">
-        {/* <Button variant="cancel" onClick={handleCancel}>
-          Cancel
-        </Button> */}
-
-        {validChange ? (
-          <TroveAction
-            transactionId={`${transactionIdPrefix}${validChange.type}`}
-            change={validChange}
-            maxBorrowingRate={maxBorrowingRate}
-            borrowingFeeDecayToleranceMinutes={60}
-          >
-            Complete transaction
-          </TroveAction>
-        ) : (
-          <Button disabled>Confirm</Button>
-        )}
+        {
+          !changePending ? (
+          validChange ? (
+            <TroveAction
+              transactionId={`${transactionIdPrefix}${validChange.type}`}
+              change={validChange}
+              maxBorrowingRate={maxBorrowingRate}
+              borrowingFeeDecayToleranceMinutes={60}
+            >
+              Complete transaction
+            </TroveAction>
+          ) : (
+            <Button sx={{width: "100%"}} disabled>Complete transaction</Button>
+          )): (<Button sx={{width: "100%"}} disabled>Transaction in progress</Button>)
+        }
       </Flex>
     </TroveEditor>
   );

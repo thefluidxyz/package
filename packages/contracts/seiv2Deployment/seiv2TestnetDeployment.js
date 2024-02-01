@@ -21,11 +21,11 @@ async function seiv2Deploy(configParams) {
   const deploymentState = stdh.loadPreviousDeployment()
 
   console.log(`deployer address: ${deployerWallet.address}`)
-  assert.equal(deployerWallet.address, configParams.liquityAddrs.DEPLOYER)
+  assert.equal(deployerWallet.address, configParams.fluidAddrs.DEPLOYER)
   // assert.equal(account2Wallet.address, configParams.beneficiaries.ACCOUNT_2)
-  let deployerETHBalance = await ethers.provider.getBalance(deployerWallet.address)
+  let deployerSEIBalance = await ethers.provider.getBalance(deployerWallet.address)
   console.log (">>>>>>>>>>>", await ethers.provider.getBalance("0x566454eF325a5eA22a831eBb4fF236F74E1372CD"))
-  console.log(`deployerETHBalance before: ${deployerETHBalance}`)
+  console.log(`deployerSEIBalance before: ${deployerSEIBalance}`)
 
   // Get UniswapV2Factory instance at its deployed address
   const uniswapV2Factory = new ethers.Contract(
@@ -38,62 +38,62 @@ async function seiv2Deploy(configParams) {
   const uniAllPairsLength = await uniswapV2Factory.allPairsLength();// ["allPairsLength()"]()
   console.log(`Uniswap Factory number of pairs: ${uniAllPairsLength}`)
 
-  deployerETHBalance = await ethers.provider.getBalance(deployerWallet.address)
-  console.log(`deployer's ETH balance before deployments: ${deployerETHBalance}`)
+  deployerSEIBalance = await ethers.provider.getBalance(deployerWallet.address)
+  console.log(`deployer's SEI balance before deployments: ${deployerSEIBalance}`)
 
   // Deploy core logic contracts
-  const liquityCore = await stdh.deployLiquityCoreSEIV2Testnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
-  await stdh.logContractObjects(liquityCore)
+  const fluidCore = await stdh.deployFluidCoreSEIV2Testnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
+  await stdh.logContractObjects(fluidCore)
 
-  // Check Uniswap Pair LUSD-ETH pair before pair creation
-  let LUSDWSEIPairAddr = await uniswapV2Factory.getPair(liquityCore.lusdToken.address, configParams.externalAddrs.WSEI_ERC20)
-  let WETHLUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WSEI_ERC20, liquityCore.lusdToken.address)
-  assert.equal(LUSDWSEIPairAddr, WETHLUSDPairAddr)
+  // Check Uniswap Pair SAI-SEI pair before pair creation
+  let SAIWSEIPairAddr = await uniswapV2Factory.getPair(fluidCore.saiToken.address, configParams.externalAddrs.WSEI_ERC20)
+  let WSEISAIPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WSEI_ERC20, fluidCore.saiToken.address)
+  assert.equal(SAIWSEIPairAddr, WSEISAIPairAddr)
 
-  if (LUSDWSEIPairAddr == th.ZERO_ADDRESS) {
-    // Deploy Unipool for LUSD-WETH
+  if (SAIWSEIPairAddr == th.ZERO_ADDRESS) {
+    // Deploy Unipool for SAI-WSEI
     await stdh.sendAndWaitForTransaction(uniswapV2Factory.createPair(
       configParams.externalAddrs.WSEI_ERC20,
-      liquityCore.lusdToken.address,
+      fluidCore.saiToken.address,
       { gasPrice }
     ))
 
-    // Check Uniswap Pair LUSD-WETH pair after pair creation (forwards and backwards should have same address)
-    LUSDWSEIPairAddr = await uniswapV2Factory.getPair(liquityCore.lusdToken.address, configParams.externalAddrs.WSEI_ERC20)
-    assert.notEqual(LUSDWSEIPairAddr, th.ZERO_ADDRESS)
-    WETHLUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WSEI_ERC20, liquityCore.lusdToken.address)
-    console.log(`LUSD-WETH pair contract address after Uniswap pair creation: ${LUSDWSEIPairAddr}`)
-    assert.equal(WETHLUSDPairAddr, LUSDWSEIPairAddr)
+    // Check Uniswap Pair SAI-WSEI pair after pair creation (forwards and backwards should have same address)
+    SAIWSEIPairAddr = await uniswapV2Factory.getPair(fluidCore.saiToken.address, configParams.externalAddrs.WSEI_ERC20)
+    assert.notEqual(SAIWSEIPairAddr, th.ZERO_ADDRESS)
+    WSEISAIPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WSEI_ERC20, fluidCore.saiToken.address)
+    console.log(`SAI-WSEI pair contract address after Uniswap pair creation: ${SAIWSEIPairAddr}`)
+    assert.equal(WSEISAIPairAddr, SAIWSEIPairAddr)
   }
 
   // Deploy Unipool
   const unipool = await stdh.deployUnipoolSEIV2Testnet(deploymentState)
-  // Deploy LQTY Contracts
-  const LQTYContracts = await stdh.deployLQTYContractsSEIV2Testnet(
-    configParams.liquityAddrs.GENERAL_SAFE, // bounty address
+  // Deploy FLO Contracts
+  const FLOContracts = await stdh.deployFLOContractsSEIV2Testnet(
+    configParams.fluidAddrs.GENERAL_SAFE, // bounty address
     unipool.address,  // lp rewards address
-    configParams.liquityAddrs.LQTY_SAFE, // multisig LQTY endowment address
+    configParams.fluidAddrs.FLO_SAFE, // multisig FLO endowment address
     deploymentState,
   )
 
   // Connect all core contracts up
-  await stdh.connectCoreContractsSEIV2Testnet(liquityCore, LQTYContracts, configParams.externalAddrs.CHAINLINK_SEIUSD_PROXY)
-  await stdh.connectLQTYContractsSEIV2Testnet(LQTYContracts)
-  await stdh.connectLQTYContractsToCoreSEIV2Testnet(LQTYContracts, liquityCore)
+  await stdh.connectCoreContractsSEIV2Testnet(fluidCore, FLOContracts, configParams.externalAddrs.CHAINLINK_SEIUSD_PROXY)
+  await stdh.connectFLOContractsSEIV2Testnet(FLOContracts)
+  await stdh.connectFLOContractsToCoreSEIV2Testnet(FLOContracts, fluidCore)
 
   // Deploy a read-only multi-trove getter
-  const multiTroveGetter = await stdh.deployMultiTroveGetterSEIV2Testnet(liquityCore, deploymentState)
+  const multiTroveGetter = await stdh.deployMultiTroveGetterSEIV2Testnet(fluidCore, deploymentState)
 
-  // Connect Unipool to LQTYToken and the LUSD-WETH pair address, with a 6 week duration
+  // Connect Unipool to FLOToken and the SAI-WSEI pair address, with a 6 week duration
   const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
-  await stdh.connectUnipoolSEIV2Testnet(unipool, LQTYContracts, LUSDWSEIPairAddr, LPRewardsDuration)
+  await stdh.connectUnipoolSEIV2Testnet(unipool, FLOContracts, SAIWSEIPairAddr, LPRewardsDuration)
 
-  // Log LQTY and Unipool addresses
-  await stdh.logContractObjects(LQTYContracts)
+  // Log FLO and Unipool addresses
+  await stdh.logContractObjects(FLOContracts)
   console.log(`Unipool address: ${unipool.address}`)
   
   // let latestBlock = await ethers.provider.getBlockNumber()
-  let deploymentStartTime = await LQTYContracts.lqtyToken.getDeploymentStartTime()
+  let deploymentStartTime = await FLOContracts.floToken.getDeploymentStartTime()
 
   console.log(`deployment start time: ${deploymentStartTime}`)
   const oneYearFromDeployment = (Number(deploymentStartTime) + timeVals.SECONDS_IN_ONE_YEAR).toString()
@@ -112,7 +112,7 @@ async function seiv2Deploy(configParams) {
         deployerWallet
       )
     } else {
-      const txReceipt = await stdh.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.deployLockupContract(investorAddr, oneYearFromDeployment, { gasPrice }))
+      const txReceipt = await stdh.sendAndWaitForTransaction(FLOContracts.lockupContractFactory.deployLockupContract(investorAddr, oneYearFromDeployment, { gasPrice }))
 
       const address = await txReceipt.logs[0].address // The deployment event emitted from the LC itself is is the first of two events, so this is its address 
       lockupContracts[investor] = new ethers.Contract(
@@ -129,10 +129,10 @@ async function seiv2Deploy(configParams) {
       stdh.saveDeployment(deploymentState)
     }
 
-    const lqtyTokenAddr = LQTYContracts.lqtyToken.address
+    const floTokenAddr = FLOContracts.floToken.address
     // verify
     if (configParams.SEIV2SCAN_BASE_URL) {
-      await stdh.verifyContract(investor, deploymentState, [lqtyTokenAddr, investorAddr, oneYearFromDeployment])
+      await stdh.verifyContract(investor, deploymentState, [floTokenAddr, investorAddr, oneYearFromDeployment])
     }
   }
 
@@ -147,7 +147,7 @@ async function seiv2Deploy(configParams) {
   console.log(`current Chainlink price: ${chainlinkPrice}`)
 
   // Check Tellor price directly (through our TellorCaller)
-  let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID
+  let tellorPriceResponse = await fluidCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the SEI-USD request ID
   console.log(`current Tellor price: ${tellorPriceResponse[1]}`)
   console.log(`current Tellor timestamp: ${tellorPriceResponse[2]}`)
 
@@ -156,9 +156,9 @@ async function seiv2Deploy(configParams) {
   // Check lockup contracts exist for each beneficiary with correct unlock time
   for (investor of Object.keys(lockupContracts)) {
     const lockupContract = lockupContracts[investor]
-    // check LC references correct LQTYToken 
-    const storedLQTYTokenAddr = await lockupContract.lqtyToken()
-    assert.equal(LQTYContracts.lqtyToken.address, storedLQTYTokenAddr)
+    // check LC references correct FLOToken 
+    const storedFLOTokenAddr = await lockupContract.floToken()
+    assert.equal(FLOContracts.floToken.address, storedFLOTokenAddr)
     // Check contract has stored correct beneficary
     const onChainBeneficiary = await lockupContract.beneficiary()
     assert.equal(configParams.beneficiaries[investor].toLowerCase(), onChainBeneficiary.toLowerCase())
@@ -168,7 +168,7 @@ async function seiv2Deploy(configParams) {
 
     console.log(
       `lockupContract addr: ${lockupContract.address},
-            stored LQTYToken addr: ${storedLQTYTokenAddr}
+            stored FLOToken addr: ${storedFLOTokenAddr}
             beneficiary: ${investor},
             beneficiary addr: ${configParams.beneficiaries[investor]},
             on-chain beneficiary addr: ${onChainBeneficiary},
@@ -177,93 +177,93 @@ async function seiv2Deploy(configParams) {
     )
   }
 
-  const LUSDETHPair = await new ethers.Contract(
-    LUSDWSEIPairAddr,
+  const SAISEIPair = await new ethers.Contract(
+    SAIWSEIPairAddr,
     UniswapV2Pair.abi,
     deployerWallet
   )
 
-  reserves = await LUSDETHPair.getReserves()
-  th.logBN("LUSD-ETH Pair's current LUSD reserves", reserves[0])
-  th.logBN("LUSD-ETH Pair's current ETH reserves", reserves[1])
+  reserves = await SAISEIPair.getReserves()
+  th.logBN("SAI-SEI Pair's current SAI reserves", reserves[0])
+  th.logBN("SAI-SEI Pair's current SEI reserves", reserves[1])
 
   // Number of troves
-  const numTroves = await liquityCore.troveManager.getTroveOwnersCount()
+  const numTroves = await fluidCore.troveManager.getTroveOwnersCount()
   console.log(`number of troves: ${numTroves} `)
 
   // Sorted list size
-  const listSize = await liquityCore.sortedTroves.getSize()
+  const listSize = await fluidCore.sortedTroves.getSize()
   console.log(`Trove list size: ${listSize} `)
 
   // Total system debt and coll
-  const entireSystemDebt = await liquityCore.troveManager.getEntireSystemDebt()
-  const entireSystemColl = await liquityCore.troveManager.getEntireSystemColl()
+  const entireSystemDebt = await fluidCore.troveManager.getEntireSystemDebt()
+  const entireSystemColl = await fluidCore.troveManager.getEntireSystemColl()
   th.logBN("Entire system debt", entireSystemDebt)
   th.logBN("Entire system coll", entireSystemColl)
   
   // TCR
-  const TCR = await liquityCore.troveManager.getTCR(chainlinkPrice)
+  const TCR = await fluidCore.troveManager.getTCR(chainlinkPrice)
   console.log(`TCR: ${TCR}`)
 
   // current borrowing rate
-  const baseRate = await liquityCore.troveManager.baseRate()
-  const currentBorrowingRate = await liquityCore.troveManager.getBorrowingRateWithDecay()
+  const baseRate = await fluidCore.troveManager.baseRate()
+  const currentBorrowingRate = await fluidCore.troveManager.getBorrowingRateWithDecay()
   th.logBN("Base rate", baseRate)
   th.logBN("Current borrowing rate", currentBorrowingRate)
 
   // total SP deposits
-  const totalSPDeposits = await liquityCore.stabilityPool.getTotalLUSDDeposits()
-  th.logBN("Total LUSD SP deposits", totalSPDeposits)
+  const totalSPDeposits = await fluidCore.stabilityPool.getTotalSAIDeposits()
+  th.logBN("Total SAI SP deposits", totalSPDeposits)
 
-  // total LQTY Staked in LQTYStaking
-  const totalLQTYStaked = await LQTYContracts.lqtyStaking.totalLQTYStaked()
-  th.logBN("Total LQTY staked", totalLQTYStaked)
+  // total FLO Staked in FLOStaking
+  const totalFLOStaked = await FLOContracts.floStaking.totalFLOStaked()
+  th.logBN("Total FLO staked", totalFLOStaked)
 
   // total LP tokens staked in Unipool
   const totalLPTokensStaked = await unipool.totalSupply()
-  th.logBN("Total LP (LUSD-ETH) tokens staked in unipool", totalLPTokensStaked)
+  th.logBN("Total LP (SAI-SEI) tokens staked in unipool", totalLPTokensStaked)
 
   // --- State variables ---
 
   // TroveManager 
   console.log("TroveManager state variables:")
-  const totalStakes = await liquityCore.troveManager.totalStakes()
-  const totalStakesSnapshot = await liquityCore.troveManager.totalStakesSnapshot()
-  const totalCollateralSnapshot = await liquityCore.troveManager.totalCollateralSnapshot()
+  const totalStakes = await fluidCore.troveManager.totalStakes()
+  const totalStakesSnapshot = await fluidCore.troveManager.totalStakesSnapshot()
+  const totalCollateralSnapshot = await fluidCore.troveManager.totalCollateralSnapshot()
   th.logBN("Total trove stakes", totalStakes)
   th.logBN("Snapshot of total trove stakes before last liq. ", totalStakesSnapshot)
   th.logBN("Snapshot of total trove collateral before last liq. ", totalCollateralSnapshot)
 
-  const L_ETH = await liquityCore.troveManager.L_ETH()
-  const L_LUSDDebt = await liquityCore.troveManager.L_LUSDDebt()
-  th.logBN("L_ETH", L_ETH)
-  th.logBN("L_LUSDDebt", L_LUSDDebt)
+  const L_SEI = await fluidCore.troveManager.L_SEI()
+  const L_SAIDebt = await fluidCore.troveManager.L_SAIDebt()
+  th.logBN("L_SEI", L_SEI)
+  th.logBN("L_SAIDebt", L_SAIDebt)
 
   // StabilityPool
   console.log("StabilityPool state variables:")
-  const P = await liquityCore.stabilityPool.P()
-  const currentScale = await liquityCore.stabilityPool.currentScale()
-  const currentEpoch = await liquityCore.stabilityPool.currentEpoch()
-  const S = await liquityCore.stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-  const G = await liquityCore.stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+  const P = await fluidCore.stabilityPool.P()
+  const currentScale = await fluidCore.stabilityPool.currentScale()
+  const currentEpoch = await fluidCore.stabilityPool.currentEpoch()
+  const S = await fluidCore.stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
+  const G = await fluidCore.stabilityPool.epochToScaleToG(currentEpoch, currentScale)
   th.logBN("Product P", P)
   th.logBN("Current epoch", currentEpoch)
   th.logBN("Current scale", currentScale)
   th.logBN("Sum S, at current epoch and scale", S)
   th.logBN("Sum G, at current epoch and scale", G)
 
-  // LQTYStaking
-  console.log("LQTYStaking state variables:")
-  const F_LUSD = await LQTYContracts.lqtyStaking.F_LUSD()
-  const F_ETH = await LQTYContracts.lqtyStaking.F_ETH()
-  th.logBN("F_LUSD", F_LUSD)
-  th.logBN("F_ETH", F_ETH)
+  // FLOStaking
+  console.log("FLOStaking state variables:")
+  const F_SAI = await FLOContracts.floStaking.F_SAI()
+  const F_SEI = await FLOContracts.floStaking.F_SEI()
+  th.logBN("F_SAI", F_SAI)
+  th.logBN("F_SEI", F_SEI)
 
 
   // CommunityIssuance
   console.log("CommunityIssuance state variables:")
-  const totalLQTYIssued = await LQTYContracts.communityIssuance.totalLQTYIssued()
-  th.logBN("Total LQTY issued to depositors / front ends", totalLQTYIssued)
+  const totalFLOIssued = await FLOContracts.communityIssuance.totalFLOIssued()
+  th.logBN("Total FLO issued to depositors / front ends", totalFLOIssued)
 
 }
 

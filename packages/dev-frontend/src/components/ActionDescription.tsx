@@ -12,11 +12,11 @@ export const ActionDescription: React.FC = ({ children }) => (
       mb: [2, 3],
       p: 3,
 
-      border: 1,
-      borderRadius: "8px",
-      borderColor: "accent",
-      boxShadow: 2,
-      bg: "rgba(46, 182, 234, 0.05)"
+      // border: 1,
+      // borderRadius: "8px",
+      // borderColor: "accent",
+      // boxShadow: 2,
+      // bg: "rgba(46, 182, 234, 0.05)"
     }}
   >
     <Flex sx={{ alignItems: "center" }}>

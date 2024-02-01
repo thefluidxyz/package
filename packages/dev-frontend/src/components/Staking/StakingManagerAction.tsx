@@ -1,12 +1,12 @@
 import { Button } from "theme-ui";
 
-import { Decimal, LQTYStakeChange } from "@fluid/lib-base";
+import { Decimal, FLOStakeChange } from "@fluid/lib-base";
 
 import { useFluid } from "../../hooks/FluidContext";
 import { useTransactionFunction } from "../Transaction";
 
 type StakingActionProps = {
-  change: LQTYStakeChange<Decimal>;
+  change: FLOStakeChange<Decimal>;
 };
 
 export const StakingManagerAction: React.FC<StakingActionProps> = ({ change, children }) => {
@@ -14,9 +14,9 @@ export const StakingManagerAction: React.FC<StakingActionProps> = ({ change, chi
 
   const [sendTransaction] = useTransactionFunction(
     "stake",
-    change.stakeLQTY
-      ? fluid.send.stakeLQTY.bind(fluid.send, change.stakeLQTY)
-      : fluid.send.unstakeLQTY.bind(fluid.send, change.unstakeLQTY)
+    change.stakeFLO
+      ? fluid.send.stakeFLO.bind(fluid.send, change.stakeFLO)
+      : fluid.send.unstakeFLO.bind(fluid.send, change.unstakeFLO)
   );
 
   return <Button onClick={sendTransaction}>{children}</Button>;

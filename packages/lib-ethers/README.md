@@ -22,8 +22,8 @@ async function example() {
   const liquity = await EthersLiquity.connect(wallet);
 
   const { newTrove } = await liquity.openTrove({
-    depositCollateral: 5, // ETH
-    borrowLUSD: 2000
+    depositCollateral: 5, // SEI
+    borrowSAI: 2000
   });
 
   console.log(`Successfully opened a Liquity Trove (${newTrove})!`);

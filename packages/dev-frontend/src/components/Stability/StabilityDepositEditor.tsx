@@ -18,41 +18,41 @@ import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
 
-const select = ({ lusdBalance, lusdInStabilityPool }: FluidStoreState) => ({
-  lusdBalance,
-  lusdInStabilityPool
+const select = ({ saiBalance, saiInStabilityPool }: FluidStoreState) => ({
+  saiBalance,
+  saiInStabilityPool
 });
 
 type StabilityDepositEditorProps = {
   originalDeposit: StabilityDeposit;
-  editedLUSD: Decimal;
+  editedSAI: Decimal;
   changePending: boolean;
   dispatch: (action: { type: "setDeposit"; newValue: Decimalish } | { type: "revert" }) => void;
 };
 
 export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   originalDeposit,
-  editedLUSD,
+  editedSAI,
   changePending,
   dispatch,
   children
 }) => {
-  const { lusdBalance, lusdInStabilityPool } = useLiquitySelector(select);
+  const { saiBalance, saiInStabilityPool } = useLiquitySelector(select);
   const editingState = useState<string>();
 
-  const edited = !editedLUSD.eq(originalDeposit.currentLUSD);
+  const edited = !editedSAI.eq(originalDeposit.currentSAI);
 
-  const maxAmount = originalDeposit.currentLUSD.add(lusdBalance);
-  const maxedOut = editedLUSD.eq(maxAmount);
+  const maxAmount = originalDeposit.currentSAI.add(saiBalance);
+  const maxedOut = editedSAI.eq(maxAmount);
 
-  const lusdInStabilityPoolAfterChange = lusdInStabilityPool
-    .sub(originalDeposit.currentLUSD)
-    .add(editedLUSD);
+  const saiInStabilityPoolAfterChange = saiInStabilityPool
+    .sub(originalDeposit.currentSAI)
+    .add(editedSAI);
 
-  const originalPoolShare = originalDeposit.currentLUSD.mulDiv(100, lusdInStabilityPool);
-  const newPoolShare = editedLUSD.mulDiv(100, lusdInStabilityPoolAfterChange);
+  const originalPoolShare = originalDeposit.currentSAI.mulDiv(100, saiInStabilityPool);
+  const newPoolShare = editedSAI.mulDiv(100, saiInStabilityPoolAfterChange);
   const poolShareChange =
-    originalDeposit.currentLUSD.nonZero &&
+    originalDeposit.currentSAI.nonZero &&
     Difference.between(newPoolShare, originalPoolShare).nonZero;
 
   return (
@@ -73,13 +73,13 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
       <Box sx={{ p: [2, 3] }}>
         <EditableRow
           label="Deposit"
-          inputId="deposit-lqty"
-          amount={editedLUSD.prettify()}
+          inputId="deposit-flo"
+          amount={editedSAI.prettify()}
           maxAmount={maxAmount.toString()}
           maxedOut={maxedOut}
           unit={COIN}
           {...{ editingState }}
-          editedAmount={editedLUSD.toString(2)}
+          editedAmount={editedSAI.toString(2)}
           setEditedAmount={newValue => dispatch({ type: "setDeposit", newValue })}
         />
 
@@ -109,14 +109,14 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Reward"
               inputId="deposit-reward"
-              amount={originalDeposit.lqtyReward.prettify()}
-              color={originalDeposit.lqtyReward.nonZero && "success"}
+              amount={originalDeposit.floReward.prettify()}
+              color={originalDeposit.floReward.nonZero && "success"}
               unit={GT}
               infoIcon={
                 <InfoIcon
                   tooltip={
                     <Card variant="tooltip" sx={{ width: "240px" }}>
-                      Although the LQTY rewards accrue every minute, the value on the UI only updates
+                      Although the FLO rewards accrue every minute, the value on the UI only updates
                       when a user transacts with the Stability Pool. Therefore you may receive more
                       rewards than is displayed when you claim or adjust your deposit.
                     </Card>

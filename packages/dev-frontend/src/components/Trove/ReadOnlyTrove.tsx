@@ -25,7 +25,6 @@ export const ReadOnlyTrove: React.FC = () => {
 
   const liquidationPrice = trove.collateral.eq(0) ? price : trove.debt.mulDiv(1.1, trove.collateral)
 
-  // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
     <div className="mt-7 sm:mt-8">
       <div className="text-[32px] font-semibold p-0 sm:pl-4 sm:pr-2 py-2">Borrowing</div>

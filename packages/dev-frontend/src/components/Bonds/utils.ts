@@ -24,8 +24,8 @@ const dateWithoutHours = (timestamp: number) => new Date(new Date(timestamp).toD
 
 // Decimal type doesn't support negatives so use number instead
 const getReturn = (accrued: Decimal, deposit: Decimal, marketPrice: Decimal): number => {
-  const accruedLusdValue = accrued.mul(marketPrice);
-  return parseFloat(accruedLusdValue.toString()) - parseFloat(deposit.toString());
+  const accruedSaiValue = accrued.mul(marketPrice);
+  return parseFloat(accruedSaiValue.toString()) - parseFloat(deposit.toString());
 };
 
 const dummyTokenUri =
@@ -52,7 +52,7 @@ const getBreakEvenPeriodInDays = (
   return alphaAccrualFactor.div(effectivePremium.sub(Decimal.ONE));
 };
 
-const getFutureBLusdAccrualFactor = (
+const getFutureBSaiAccrualFactor = (
   floorPrice: Decimal,
   daysInFuture: Decimal,
   alphaAccrualFactor: Decimal,
@@ -80,21 +80,21 @@ const getFutureDateInDays = (days: number): Date => {
 };
 
 const getFloorPrice = (
-  bammLusdDebt: Decimal,
-  totalLusdInCurve: Decimal,
-  pendingLusd: Decimal,
-  permanentLusd: Decimal,
-  bLusdSupply: Decimal
+  bammSaiDebt: Decimal,
+  totalSaiInCurve: Decimal,
+  pendingSai: Decimal,
+  permanentSai: Decimal,
+  bSaiSupply: Decimal
 ): Decimal => {
-  return bammLusdDebt.add(totalLusdInCurve).sub(pendingLusd).sub(permanentLusd).div(bLusdSupply);
+  return bammSaiDebt.add(totalSaiInCurve).sub(pendingSai).sub(permanentSai).div(bSaiSupply);
 };
 
 const getAverageBondAgeInSeconds = (
   totalWeightedStartTimes: Decimal,
-  pendingBucketLusd: Decimal
+  pendingBucketSai: Decimal
 ): Decimal => {
   const averageStartTimeMs =
-    Math.round(parseFloat(totalWeightedStartTimes.div(pendingBucketLusd).toString())) * 1000;
+    Math.round(parseFloat(totalWeightedStartTimes.div(pendingBucketSai).toString())) * 1000;
   const averageBondAgeInSeconds = Decimal.from(Date.now() - averageStartTimeMs).div(1000);
 
   return averageBondAgeInSeconds;
@@ -182,7 +182,7 @@ export {
   dateWithoutHours,
   getReturn,
   getTokenUri,
-  getFutureBLusdAccrualFactor,
+  getFutureBSaiAccrualFactor,
   getBreakEvenPeriodInDays,
   getRebondPeriodInDays,
   getAverageBondAgeInSeconds,
