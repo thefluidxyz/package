@@ -11,7 +11,7 @@
 |  [Decimal](./lib-base.decimal.md) | Fixed-point decimal bignumber with 18 digits of precision. |
 |  [Fees](./lib-base.fees.md) | Calculator for fees. |
 |  [FluidStore](./lib-base.fluidstore.md) | Abstract base class of Fluid data store implementations. |
-|  [LQTYStake](./lib-base.lqtystake.md) | Represents a user's LQTY stake and accrued gains. |
+|  [FLOStake](./lib-base.lqtystake.md) | Represents a user's FLO stake and accrued gains. |
 |  [StabilityDeposit](./lib-base.stabilitydeposit.md) | A Stability Deposit and its accrued gains. |
 |  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableFluid](./lib-base.transactablefluid.md) functions in case of transaction failure. |
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
@@ -27,16 +27,16 @@
 |  [FluidStoreDerivedState](./lib-base.fluidstorederivedstate.md) | State variables derived from [FluidStoreBaseState](./lib-base.fluidstorebasestate.md)<!-- -->. |
 |  [FluidStoreListenerParams](./lib-base.fluidstorelistenerparams.md) | Parameters passed to [FluidStore](./lib-base.fluidstore.md) listeners. |
 |  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactablefluid.liquidate.md) or [liquidateUpTo()](./lib-base.transactablefluid.liquidateupto.md) transaction. |
-|  [PopulatableFluid](./lib-base.populatablefluid.md) | Prepare Liquity transactions for sending. |
+|  [PopulatableFluid](./lib-base.populatablefluid.md) | Prepare Fluid transactions for sending. |
 |  [PopulatedFluidTransaction](./lib-base.populatedfluidtransaction.md) | A transaction that has been prepared for sending. |
 |  [PopulatedRedemption](./lib-base.populatedredemption.md) | A redemption transaction that has been prepared for sending. |
 |  [ReadableFluid](./lib-base.readablefluid.md) | Read the state of the Fluid protocol. |
-|  [RedemptionDetails](./lib-base.redemptiondetails.md) | Details of a [redeemLUSD()](./lib-base.transactablefluid.redeemlusd.md) transaction. |
+|  [RedemptionDetails](./lib-base.redemptiondetails.md) | Details of a [redeemSAI()](./lib-base.transactablefluid.redeemlusd.md) transaction. |
 |  [SendableFluid](./lib-base.sendablefluid.md) | Send Fluid transactions. |
 |  [SentFluidTransaction](./lib-base.sentfluidtransaction.md) | A transaction that has already been sent. |
-|  [StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md) | Details of a [depositLUSDInStabilityPool()](./lib-base.transactablefluid.depositlusdinstabilitypool.md) or [withdrawLUSDFromStabilityPool()](./lib-base.transactablefluid.withdrawlusdfromstabilitypool.md) transaction. |
+|  [StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md) | Details of a [depositSAIInStabilityPool()](./lib-base.transactablefluid.depositlusdinstabilitypool.md) or [withdrawSAIFromStabilityPool()](./lib-base.transactablefluid.withdrawlusdfromstabilitypool.md) transaction. |
 |  [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md) | Details of a [withdrawGainsFromStabilityPool()](./lib-base.transactablefluid.withdrawgainsfromstabilitypool.md) transaction. |
-|  [TransactableFluid](./lib-base.transactablefluid.md) | Send Liquity transactions and wait for them to succeed. |
+|  [TransactableFluid](./lib-base.transactablefluid.md) | Send Fluid transactions and wait for them to succeed. |
 |  [TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md) | Details of an [adjustTrove()](./lib-base.transactablefluid.adjusttrove.md) transaction. |
 |  [TroveClosureDetails](./lib-base.troveclosuredetails.md) | Details of a [closeTrove()](./lib-base.transactablefluid.closetrove.md) transaction. |
 |  [TroveCreationDetails](./lib-base.trovecreationdetails.md) | Details of an [openTrove()](./lib-base.transactablefluid.opentrove.md) transaction. |
@@ -47,9 +47,9 @@
 |  Variable | Description |
 |  --- | --- |
 |  [CRITICAL\_COLLATERAL\_RATIO](./lib-base.critical_collateral_ratio.md) | Total collateral ratio below which recovery mode is triggered. |
-|  [LUSD\_LIQUIDATION\_RESERVE](./lib-base.lusd_liquidation_reserve.md) | Amount of LUSD that's reserved for compensating the liquidator of a Trove. |
-|  [LUSD\_MINIMUM\_DEBT](./lib-base.lusd_minimum_debt.md) | A Trove must always have at least this much debt. |
-|  [LUSD\_MINIMUM\_NET\_DEBT](./lib-base.lusd_minimum_net_debt.md) | A Trove must always have at least this much debt on top of the [liquidation reserve](./lib-base.lusd_liquidation_reserve.md)<!-- -->. |
+|  [SAI\_LIQUIDATION\_RESERVE](./lib-base.lusd_liquidation_reserve.md) | Amount of SAI that's reserved for compensating the liquidator of a Trove. |
+|  [SAI\_MINIMUM\_DEBT](./lib-base.lusd_minimum_debt.md) | A Trove must always have at least this much debt. |
+|  [SAI\_MINIMUM\_NET\_DEBT](./lib-base.lusd_minimum_net_debt.md) | A Trove must always have at least this much debt on top of the [liquidation reserve](./lib-base.lusd_liquidation_reserve.md)<!-- -->. |
 |  [MAXIMUM\_BORROWING\_RATE](./lib-base.maximum_borrowing_rate.md) | Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never exceed. |
 |  [MINIMUM\_BORROWING\_RATE](./lib-base.minimum_borrowing_rate.md) | Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never decay below. |
 |  [MINIMUM\_COLLATERAL\_RATIO](./lib-base.minimum_collateral_ratio.md) | Collateral ratio below which a Trove can be liquidated in normal mode. |
@@ -63,8 +63,8 @@
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
 |  [FluidReceipt](./lib-base.fluidreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [FluidStoreState](./lib-base.fluidstorestate.md) | Type of [FluidStore](./lib-base.fluidstore.md)<!-- -->'s [state](./lib-base.fluidstore.state.md)<!-- -->. |
-|  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Liquity frontend. |
-|  [LQTYStakeChange](./lib-base.lqtystakechange.md) | Represents the change between two states of an LQTY Stake. |
+|  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Fluid frontend. |
+|  [FLOStakeChange](./lib-base.lqtystakechange.md) | Represents the change between two states of an FLO Stake. |
 |  [MinedReceipt](./lib-base.minedreceipt.md) | Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [PendingReceipt](./lib-base.pendingreceipt.md) | Indicates that the transaction hasn't been mined yet. |
 |  [StabilityDepositChange](./lib-base.stabilitydepositchange.md) | Represents the change between two Stability Deposit states. |

@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.lusdBalance property
 
-User's LUSD token balance.
+User's SAI token balance.
 
 <b>Signature:</b>
 

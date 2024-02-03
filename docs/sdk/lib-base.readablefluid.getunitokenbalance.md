@@ -4,7 +4,7 @@
 
 ## ReadableFluid.getUniTokenBalance() method
 
-Get the amount of Uniswap ETH/LUSD LP tokens held by an address.
+Get the amount of Uniswap SEI/SAI LP tokens held by an address.
 
 <b>Signature:</b>
 

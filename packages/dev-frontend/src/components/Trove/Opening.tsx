@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Flex, Button, Box, Spinner, Text } from "theme-ui";
+import { Flex, Button, Box, Spinner, Text, Input } from "theme-ui";
 import {
   FluidStoreState,
   Decimal,
@@ -92,6 +92,11 @@ export const Opening: React.FC = () => {
 
   const onCollateralRatioChange = (e: any) => {
     if (isNaN(Number(e.target.value))) return
+    if (Number(e.target.value) <= 0) {
+      setCollateralRatio(Decimal.from(1.11))
+      setBorrowAmount(Decimal.from(collateral.mulDiv(price, Decimal.from(1.1)).sub(SAI_LIQUIDATION_RESERVE)))
+      return
+    }
     setCollateralRatio(Decimal.from(Number(e.target.value)/100))
     setBorrowAmount(Decimal.from(collateral.mulDiv(price, Decimal.from(Number(e.target.value)/100)).sub(SAI_LIQUIDATION_RESERVE)))
   }
@@ -132,14 +137,45 @@ export const Opening: React.FC = () => {
                     <div className="ml-2 font-normal">{`${accountBalance}`} SEI</div>
                 </div>
             </div>
-            <div className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#BDFAE2]"} rounded-md p-[14px]`}>
-                <input 
+            <div 
+              className={`flex flex-row items-center justify-between border ${editing !== "collateral" && collateral.eq(0) ? "border-[#F45348]" : "border-[#BDFAE2]"} rounded-md p-[14px]`}
+              onClick={() => setEditing("collateral")}
+            >
+                {/* <input 
                     className="bg-transparent text-lg w-full outline-none"
                     value={collateral.toString(4)}
                     onChange={(e) => onCollateralChange(e)}
                     onBlur={() => setEditing(undefined)}
                     onClick={() => setEditing("collateral")}
-                />
+                /> */}
+                {
+                  editing === "collateral" ? (
+                    <Input
+                      autoFocus
+                      id="trove-collateral"
+                      type="number"
+                      step="any"
+                      defaultValue={collateral.toString(4)}
+                      onChange={e => onCollateralChange(e)}
+                      
+                      onBlur={() => {setEditing(undefined)}}
+                      variant="editor"
+                      sx={{
+                        backgroundColor: "transparent",
+                        fontSize: "18px",
+                        fontWeight: "medium",
+                        width: "100%",
+                        outline: "2px solid transparent",
+                        outlineOffset: "2px",
+                        borderColor: "transparent",
+                        padding: 0,
+                        marginRight: "4px"
+                      }}
+                    />
+                  ):(
+                    <div>{collateral.prettify(4)}</div>
+                  )
+                }
                 <div className="flex flex-row items-center font-medium text-lg">
                     <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" />
                     SEI
@@ -173,14 +209,44 @@ export const Opening: React.FC = () => {
             <div className="flex flex-row font-medium text-lg justify-between mb-[14px]">
                 SAI to be minted
             </div>
-            <div className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && borrowAmount.eq(0) ? "border-[#F45348]" : "border-[#BDFAE2]"} rounded-md p-[14px]`}>
-                <input 
+            <div 
+              className={`flex flex-row items-center justify-between border ${editing !== "netdebt" && borrowAmount.eq(0) ? "border-[#F45348]" : "border-[#BDFAE2]"} rounded-md p-[14px]`}
+              onClick={() => setEditing("netdebt")}
+            >
+                {/* <input 
                     className="bg-transparent text-lg w-full outline-none"
                     onChange={(e) => onBorrowingAmountChange(e)}
                     value={borrowAmount.toString(2)}
                     onBlur={() => setEditing(undefined)}
                     onClick={() => setEditing("netdebt")}
-                />
+                /> */}
+                {
+                  editing === "netdebt" ? (
+                    <Input
+                      autoFocus
+                      id="trove-collateral"
+                      type="number"
+                      step="any"
+                      defaultValue={borrowAmount.toString(4)}
+                      onChange={e => onBorrowingAmountChange(e)}
+                      onBlur={() => {setEditing(undefined)}}
+                      variant="editor"
+                      sx={{
+                        backgroundColor: "transparent",
+                        fontSize: "18px",
+                        fontWeight: "medium",
+                        width: "100%",
+                        outline: "2px solid transparent",
+                        outlineOffset: "2px",
+                        borderColor: "transparent",
+                        padding: 0,
+                        marginRight: "4px"
+                      }}
+                    />
+                  ):(
+                    <div>{borrowAmount.prettify(4)}</div>
+                  )
+                }
                 <div className="flex flex-row items-center font-medium text-lg">
                     <span className="w-4 h-4 rounded-full bg-[#BDFAE2] mr-2" />
                     SAI

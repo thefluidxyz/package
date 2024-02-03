@@ -155,7 +155,6 @@ class SEIV2TestnetDeploymentHelper {
 
     // const saiToken = new ethers.Contract("0x36B820c7A8ed89AA5b894C5fD1CeaA674ae79E3E", multiCallABI.multiCall.abi, this.deployerWallet)
 
-
     const seiOraclePriceFeedFactory = await this.getFactory("SEIOraclePriceFeed")
     const seiOraclePriceFeed = await this.loadOrDeploy(seiOraclePriceFeedFactory, 'seiOraclePriceFeed', deploymentState)
     const saiOraclePriceFeedFactory = await this.getFactory("SAIOraclePriceFeed")
@@ -167,8 +166,10 @@ class SEIV2TestnetDeploymentHelper {
         console.log('No SEIV2Testnet Url defined, skipping verification')
     } else {
         await this.verifyContract('seiOraclePriceFeed', deploymentState)
+        await this.verifyContract('saiOraclePriceFeed', deploymentState)
         await this.verifyContract('tellorMaster', deploymentState)
     }
+
     const FLOContracts = {
         seiOraclePriceFeed,
         saiOraclePriceFeed,

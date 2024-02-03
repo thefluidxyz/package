@@ -4,7 +4,7 @@
 
 ## PopulatableFluid.stakeUniTokens() method
 
-Stake Uniswap ETH/LUSD LP tokens to participate in liquidity mining and earn LQTY.
+Stake Uniswap SEI/SAI LP tokens to participate in liquidity mining and earn FLO.
 
 <b>Signature:</b>
 

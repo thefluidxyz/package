@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.accountBalance property
 
-User's native currency balance (e.g. Ether).
+User's native currency balance (e.g. Sei).
 
 <b>Signature:</b>
 

@@ -26,17 +26,17 @@ borrowingRate(when?: Date): Decimal;
 
 By default, the fee is calculated at the time of the latest block. This can be overridden using the `when` parameter.
 
-To calculate the borrowing fee in LUSD, multiply the borrowed LUSD amount by the borrowing rate.
+To calculate the borrowing fee in SAI, multiply the borrowed SAI amount by the borrowing rate.
 
 ## Example
 
 
 ```typescript
-const fees = await liquity.getFees();
+const fees = await fluid.getFees();
 
-const borrowedLUSDAmount = 100;
+const borrowedSAIAmount = 100;
 const borrowingRate = fees.borrowingRate();
-const borrowingFeeLUSD = borrowingRate.mul(borrowedLUSDAmount);
+const borrowingFeeSAI = borrowingRate.mul(borrowedSAIAmount);
 
 ```
 

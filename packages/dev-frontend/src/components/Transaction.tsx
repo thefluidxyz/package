@@ -129,11 +129,9 @@ export const useTransactionFunction = (
 
   const sendTransaction = useCallback(async () => {
     setTransactionState({ type: "waitingForApproval", id });
-    window.alert("$$$$$$$$$$$$")
 
     try {
       const tx = await send();
-      window.alert ("22222222222")
 
       setTransactionState({
         type: "waitingForConfirmation",
@@ -142,13 +140,10 @@ export const useTransactionFunction = (
       });
     } catch (error) {
       if (hasMessage(error) && error.message.includes("User denied transaction signature")) {
-        window.alert(">>>>")
         window.alert(error?.message)
         setTransactionState({ type: "cancelled", id });
       } else {
         console.error(error);
-        window.alert(">>>>111")
-        window.alert(error)
         setTransactionState({
           type: "failed",
           id,

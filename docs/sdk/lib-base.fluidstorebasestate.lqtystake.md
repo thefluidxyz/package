@@ -4,10 +4,10 @@
 
 ## FluidStoreBaseState.lqtyStake property
 
-User's LQTY stake.
+User's FLO stake.
 
 <b>Signature:</b>
 
 ```typescript
-lqtyStake: LQTYStake;
+lqtyStake: FLOStake;
 ```

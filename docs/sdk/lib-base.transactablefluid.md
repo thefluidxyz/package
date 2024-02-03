@@ -4,7 +4,7 @@
 
 ## TransactableFluid interface
 
-Send Liquity transactions and wait for them to succeed.
+Send Fluid transactions and wait for them to succeed.
 
 <b>Signature:</b>
 
@@ -16,36 +16,36 @@ export interface TransactableFluid
 
 The functions return the details of the transaction (if any), or throw an implementation-specific subclass of [TransactionFailedError](./lib-base.transactionfailederror.md) in case of transaction failure.
 
-Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
+Implemented by [SeisFluid](./lib-ethers.ethersfluid.md)<!-- -->.
 
 ## Methods
 
 |  Method | Description |
 |  --- | --- |
 |  [adjustTrove(params, maxBorrowingRate)](./lib-base.transactablefluid.adjusttrove.md) | Adjust existing Trove by changing its collateral, debt, or both. |
-|  [approveUniTokens(allowance)](./lib-base.transactablefluid.approveunitokens.md) | Allow the liquidity mining contract to use Uniswap ETH/LUSD LP tokens for [staking](./lib-base.transactablefluid.stakeunitokens.md)<!-- -->. |
-|  [borrowLUSD(amount, maxBorrowingRate)](./lib-base.transactablefluid.borrowlusd.md) | Adjust existing Trove by borrowing more LUSD. |
+|  [approveUniTokens(allowance)](./lib-base.transactablefluid.approveunitokens.md) | Allow the liquidity mining contract to use Uniswap SEI/SAI LP tokens for [staking](./lib-base.transactablefluid.stakeunitokens.md)<!-- -->. |
+|  [borrowSAI(amount, maxBorrowingRate)](./lib-base.transactablefluid.borrowlusd.md) | Adjust existing Trove by borrowing more SAI. |
 |  [claimCollateralSurplus()](./lib-base.transactablefluid.claimcollateralsurplus.md) | Claim leftover collateral after a liquidation or redemption. |
 |  [closeTrove()](./lib-base.transactablefluid.closetrove.md) | Close existing Trove by repaying all debt and withdrawing all collateral. |
 |  [depositCollateral(amount)](./lib-base.transactablefluid.depositcollateral.md) | Adjust existing Trove by depositing more collateral. |
-|  [depositLUSDInStabilityPool(amount, frontendTag)](./lib-base.transactablefluid.depositlusdinstabilitypool.md) | Make a new Stability Deposit, or top up existing one. |
+|  [depositSAIInStabilityPool(amount, frontendTag)](./lib-base.transactablefluid.depositlusdinstabilitypool.md) | Make a new Stability Deposit, or top up existing one. |
 |  [exitLiquidityMining()](./lib-base.transactablefluid.exitliquiditymining.md) | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [liquidate(address)](./lib-base.transactablefluid.liquidate.md) | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(maximumNumberOfTrovesToLiquidate)](./lib-base.transactablefluid.liquidateupto.md) | Liquidate the least collateralized Troves up to a maximum number. |
-|  [openTrove(params, maxBorrowingRate)](./lib-base.transactablefluid.opentrove.md) | Open a new Trove by depositing collateral and borrowing LUSD. |
-|  [redeemLUSD(amount, maxRedemptionRate)](./lib-base.transactablefluid.redeemlusd.md) | Redeem LUSD to native currency (e.g. Ether) at face value. |
-|  [registerFrontend(kickbackRate)](./lib-base.transactablefluid.registerfrontend.md) | Register current wallet address as a Liquity frontend. |
-|  [repayLUSD(amount)](./lib-base.transactablefluid.repaylusd.md) | Adjust existing Trove by repaying some of its debt. |
-|  [sendLQTY(toAddress, amount)](./lib-base.transactablefluid.sendlqty.md) | Send LQTY tokens to an address. |
-|  [sendLUSD(toAddress, amount)](./lib-base.transactablefluid.sendlusd.md) | Send LUSD tokens to an address. |
-|  [stakeLQTY(amount)](./lib-base.transactablefluid.stakelqty.md) | Stake LQTY to start earning fee revenue or increase existing stake. |
-|  [stakeUniTokens(amount)](./lib-base.transactablefluid.stakeunitokens.md) | Stake Uniswap ETH/LUSD LP tokens to participate in liquidity mining and earn LQTY. |
+|  [openTrove(params, maxBorrowingRate)](./lib-base.transactablefluid.opentrove.md) | Open a new Trove by depositing collateral and borrowing SAI. |
+|  [redeemSAI(amount, maxRedemptionRate)](./lib-base.transactablefluid.redeemlusd.md) | Redeem SAI to native currency (e.g. Sei) at face value. |
+|  [registerFrontend(kickbackRate)](./lib-base.transactablefluid.registerfrontend.md) | Register current wallet address as a Fluid frontend. |
+|  [repaySAI(amount)](./lib-base.transactablefluid.repaylusd.md) | Adjust existing Trove by repaying some of its debt. |
+|  [sendFLO(toAddress, amount)](./lib-base.transactablefluid.sendlqty.md) | Send FLO tokens to an address. |
+|  [sendSAI(toAddress, amount)](./lib-base.transactablefluid.sendlusd.md) | Send SAI tokens to an address. |
+|  [stakeFLO(amount)](./lib-base.transactablefluid.stakelqty.md) | Stake FLO to start earning fee revenue or increase existing stake. |
+|  [stakeUniTokens(amount)](./lib-base.transactablefluid.stakeunitokens.md) | Stake Uniswap SEI/SAI LP tokens to participate in liquidity mining and earn FLO. |
 |  [transferCollateralGainToTrove()](./lib-base.transactablefluid.transfercollateralgaintotrove.md) | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
-|  [unstakeLQTY(amount)](./lib-base.transactablefluid.unstakelqty.md) | Withdraw LQTY from staking. |
-|  [unstakeUniTokens(amount)](./lib-base.transactablefluid.unstakeunitokens.md) | Withdraw Uniswap ETH/LUSD LP tokens from liquidity mining. |
+|  [unstakeFLO(amount)](./lib-base.transactablefluid.unstakelqty.md) | Withdraw FLO from staking. |
+|  [unstakeUniTokens(amount)](./lib-base.transactablefluid.unstakeunitokens.md) | Withdraw Uniswap SEI/SAI LP tokens from liquidity mining. |
 |  [withdrawCollateral(amount)](./lib-base.transactablefluid.withdrawcollateral.md) | Adjust existing Trove by withdrawing some of its collateral. |
-|  [withdrawGainsFromStabilityPool()](./lib-base.transactablefluid.withdrawgainsfromstabilitypool.md) | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [LQTY reward](./lib-base.stabilitydeposit.lqtyreward.md) from Stability Deposit. |
-|  [withdrawGainsFromStaking()](./lib-base.transactablefluid.withdrawgainsfromstaking.md) | Withdraw [collateral gain](./lib-base.lqtystake.collateralgain.md) and [LUSD gain](./lib-base.lqtystake.lusdgain.md) from LQTY stake. |
-|  [withdrawLQTYRewardFromLiquidityMining()](./lib-base.transactablefluid.withdrawlqtyrewardfromliquiditymining.md) | Withdraw LQTY that has been earned by mining liquidity. |
-|  [withdrawLUSDFromStabilityPool(amount)](./lib-base.transactablefluid.withdrawlusdfromstabilitypool.md) | Withdraw LUSD from Stability Deposit. |
+|  [withdrawGainsFromStabilityPool()](./lib-base.transactablefluid.withdrawgainsfromstabilitypool.md) | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [FLO reward](./lib-base.stabilitydeposit.lqtyreward.md) from Stability Deposit. |
+|  [withdrawGainsFromStaking()](./lib-base.transactablefluid.withdrawgainsfromstaking.md) | Withdraw [collateral gain](./lib-base.lqtystake.collateralgain.md) and [SAI gain](./lib-base.lqtystake.lusdgain.md) from FLO stake. |
+|  [withdrawFLORewardFromLiquidityMining()](./lib-base.transactablefluid.withdrawlqtyrewardfromliquiditymining.md) | Withdraw FLO that has been earned by mining liquidity. |
+|  [withdrawSAIFromStabilityPool(amount)](./lib-base.transactablefluid.withdrawlusdfromstabilitypool.md) | Withdraw SAI from Stability Deposit. |
 

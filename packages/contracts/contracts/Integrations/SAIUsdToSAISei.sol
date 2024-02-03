@@ -8,8 +8,8 @@ interface IPriceFeed {
 
 
 contract SAIUsdToSAISei is IPriceFeed {
-    IPriceFeed public constant SAI_USD = IPriceFeed(0xAc86798f5612041a7763A5146fa47F967dc4b21B);
-    IPriceFeed public constant SEI_USD = IPriceFeed(0x29A2ce0f6E5CB41b9BfB9205F89b7aa341520487);
+    IPriceFeed public constant SAI_USD = IPriceFeed(0x58B29a5b43B295561efB0fC7d2cd2619d4C404a8);
+    IPriceFeed public constant SEI_USD = IPriceFeed(0x1E7e89BBEBd18E727548010A739116184fb82Ed4);
 
     constructor() public {}
 

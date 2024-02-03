@@ -4,7 +4,7 @@
 
 ## StabilityPoolGainsWithdrawalDetails.lusdLoss property
 
-Amount of LUSD burned from the deposit by liquidations since the last modification.
+Amount of SAI burned from the deposit by liquidations since the last modification.
 
 <b>Signature:</b>
 

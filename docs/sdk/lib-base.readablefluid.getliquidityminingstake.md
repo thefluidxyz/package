@@ -4,7 +4,7 @@
 
 ## ReadableFluid.getLiquidityMiningStake() method
 
-Get the amount of Uniswap ETH/LUSD LP tokens currently staked by an address in liquidity mining.
+Get the amount of Uniswap SEI/SAI LP tokens currently staked by an address in liquidity mining.
 
 <b>Signature:</b>
 

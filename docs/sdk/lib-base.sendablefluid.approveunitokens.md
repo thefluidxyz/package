@@ -4,7 +4,7 @@
 
 ## SendableFluid.approveUniTokens() method
 
-Allow the liquidity mining contract to use Uniswap ETH/LUSD LP tokens for [staking](./lib-base.transactablefluid.stakeunitokens.md)<!-- -->.
+Allow the liquidity mining contract to use Uniswap SEI/SAI LP tokens for [staking](./lib-base.transactablefluid.stakeunitokens.md)<!-- -->.
 
 <b>Signature:</b>
 

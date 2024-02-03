@@ -1,6 +1,7 @@
 require("@nomiclabs/hardhat-truffle5");
 require("@nomiclabs/hardhat-ethers");
-require("@nomiclabs/hardhat-etherscan");
+require("@nomicfoundation/hardhat-toolbox");
+// require("@nomiclabs/hardhat-etherscan");
 require("solidity-coverage");
 require("hardhat-gas-reporter");
 
@@ -24,18 +25,13 @@ const alchemyUrl = () => {
     return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
 }
 
-const alchemyUrlRinkeby = () => {
-    // return `https://goerli.infura.io/v3/${getSecret('alchemyAPIKeyRinkeby')}`
-    // return `https://evm-devnet.seinetwork.io`
-    return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
-}
-
-const seiv2TestnetRPCUrl = "https://evm-devnet.seinetwork.io"
+const seiv2TestnetRPCUrl = "https://evm-rpc.arctic-1.seinetwork.io"
+// const seiv2TestnetRPCUrl = "https://evm-devnet.seinetwork.io"
 
 module.exports = {
     paths: {
-        // contracts: "./contracts",
-        // artifacts: "./artifacts"
+        contracts: "./contracts",
+        artifacts: "./artifacts"
     },
     solidity: {
         compilers: [
@@ -73,14 +69,6 @@ module.exports = {
             url: "http://127.0.0.1:8545/",
             chainId: 31337,
             gasPrice: 20000000000,
-            // timeout: 12000
-            // accounts: {
-            //     mnemonic: "test test test test test test test test test test test junk",
-            //     path: "m/44'/60'/0'/0",
-            //     initialIndex: 0,
-            //     count:10,
-            //     passphrase: ""
-            // }
         },
         hardhat: {
             accounts: accountsList,
@@ -89,11 +77,6 @@ module.exports = {
             gas: 2100000,
             gasPrice: 110000000000,
             initialBaseFeePerGas: 0,
-            // forking: {
-            //     url: "https://eth.llamarpc.com",
-            //     // blockNumber can be specified if you want to fork from a specific block
-            //     blockNumber: 1234567 // Example block number
-            // }
         },
         mainnet: {
             url: alchemyUrl(),
@@ -113,28 +96,26 @@ module.exports = {
         },
         seiv2testnet: {
             url: seiv2TestnetRPCUrl,
-            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 5000000000,
+            gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 3500000000,
             accounts: [
                 getSecret('DEPLOYER_PRIVATEKEY', ENV.DEPLOY_PRIVATE_KEY1),
                 getSecret('ACCOUNT2_PRIVATEKEY', ENV.DEPLOY_PRIVATE_KEY2)
             ],
-            chainId: 713715
-        },
-        rinkeby: {
-            url: alchemyUrlRinkeby(),
-            gas: 10000000,  // tx gas limit
-            accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', ENV.DEPLOY_PRIVATE_KEY1)]
-        },
+            // chainId: 713715,
+            network_id: '*'
+        }
     },
     etherscan: {
-        apiKey: getSecret("ETHERSCAN_API_KEY"),
+        apiKey: {
+            seiv2testnet: "0"
+        },
         customChains: [
             {
                 network: "seiv2testnet",
                 chainId: 713715,
                 urls: {
-                    apiURL: "https://testnet.seiv2scan.metabest.tech/api",
-                    browserURL: "https://testnet.seiv2scan.metabest.tech/"
+                    apiURL: "https://arctic-1-api.seitrace.com/api/",
+                    browserURL: "https://seitrace.com/"
                 }
             },
             {

@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.lqtyBalance property
 
-User's LQTY token balance.
+User's FLO token balance.
 
 <b>Signature:</b>
 

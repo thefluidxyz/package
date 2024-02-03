@@ -4,7 +4,7 @@
 
 ## PopulatedRedemption.isTruncated property
 
-Whether `redeemableLUSDAmount` is less than `attemptedLUSDAmount`<!-- -->.
+Whether `redeemableSAIAmount` is less than `attemptedSAIAmount`<!-- -->.
 
 <b>Signature:</b>
 

@@ -30,6 +30,6 @@ Implemented by .
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [start()](./lib-base.fluidstore.start.md) |  | Start monitoring the blockchain for Liquity state changes. |
+|  [start()](./lib-base.fluidstore.start.md) |  | Start monitoring the blockchain for Fluid state changes. |
 |  [subscribe(listener)](./lib-base.fluidstore.subscribe.md) |  | Register a state change listener. |
 

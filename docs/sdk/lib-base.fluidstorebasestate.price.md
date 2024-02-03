@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.price property
 
-Current price of the native currency (e.g. Ether) in USD.
+Current price of the native currency (e.g. Sei) in USD.
 
 <b>Signature:</b>
 

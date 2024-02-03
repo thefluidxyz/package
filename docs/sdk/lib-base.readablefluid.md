@@ -14,7 +14,7 @@ export interface ReadableFluid
 
 ## Remarks
 
-Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
+Implemented by [SeisFluid](./lib-ethers.ethersfluid.md)<!-- -->.
 
 ## Methods
 
@@ -22,25 +22,25 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  --- | --- |
 |  [getCollateralSurplusBalance(address)](./lib-base.readablefluid.getcollateralsurplusbalance.md) | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees()](./lib-base.readablefluid.getfees.md) | Get a calculator for current fees. |
-|  [getFrontendStatus(address)](./lib-base.readablefluid.getfrontendstatus.md) | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
-|  [getLiquidityMiningLQTYReward(address)](./lib-base.readablefluid.getliquiditymininglqtyreward.md) | Get the amount of LQTY earned by an address through mining liquidity. |
-|  [getLiquidityMiningStake(address)](./lib-base.readablefluid.getliquidityminingstake.md) | Get the amount of Uniswap ETH/LUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getLQTYBalance(address)](./lib-base.readablefluid.getlqtybalance.md) | Get the amount of LQTY held by an address. |
-|  [getLQTYStake(address)](./lib-base.readablefluid.getlqtystake.md) | Get the current state of an LQTY Stake. |
-|  [getLUSDBalance(address)](./lib-base.readablefluid.getlusdbalance.md) | Get the amount of LUSD held by an address. |
-|  [getLUSDInStabilityPool()](./lib-base.readablefluid.getlusdinstabilitypool.md) | Get the total amount of LUSD currently deposited in the Stability Pool. |
+|  [getFrontendStatus(address)](./lib-base.readablefluid.getfrontendstatus.md) | Check whether an address is registered as a Fluid frontend, and what its kickback rate is. |
+|  [getLiquidityMiningFLOReward(address)](./lib-base.readablefluid.getliquiditymininglqtyreward.md) | Get the amount of FLO earned by an address through mining liquidity. |
+|  [getLiquidityMiningStake(address)](./lib-base.readablefluid.getliquidityminingstake.md) | Get the amount of Uniswap SEI/SAI LP tokens currently staked by an address in liquidity mining. |
+|  [getFLOBalance(address)](./lib-base.readablefluid.getlqtybalance.md) | Get the amount of FLO held by an address. |
+|  [getFLOStake(address)](./lib-base.readablefluid.getlqtystake.md) | Get the current state of an FLO Stake. |
+|  [getSAIBalance(address)](./lib-base.readablefluid.getlusdbalance.md) | Get the amount of SAI held by an address. |
+|  [getSAIInStabilityPool()](./lib-base.readablefluid.getlusdinstabilitypool.md) | Get the total amount of SAI currently deposited in the Stability Pool. |
 |  [getNumberOfTroves()](./lib-base.readablefluid.getnumberoftroves.md) | Get number of Troves that are currently open. |
-|  [getPrice()](./lib-base.readablefluid.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningLQTYReward()](./lib-base.readablefluid.getremainingliquiditymininglqtyreward.md) | Get the remaining LQTY that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolLQTYReward()](./lib-base.readablefluid.getremainingstabilitypoollqtyreward.md) | Get the remaining LQTY that will be collectively rewarded to stability depositors. |
+|  [getPrice()](./lib-base.readablefluid.getprice.md) | Get the current price of the native currency (e.g. Sei) in USD. |
+|  [getRemainingLiquidityMiningFLOReward()](./lib-base.readablefluid.getremainingliquiditymininglqtyreward.md) | Get the remaining FLO that will be collectively rewarded to liquidity miners. |
+|  [getRemainingStabilityPoolFLOReward()](./lib-base.readablefluid.getremainingstabilitypoollqtyreward.md) | Get the remaining FLO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(address)](./lib-base.readablefluid.getstabilitydeposit.md) | Get the current state of a Stability Deposit. |
-|  [getTotal()](./lib-base.readablefluid.gettotal.md) | Get the total amount of collateral and debt in the Liquity system. |
+|  [getTotal()](./lib-base.readablefluid.gettotal.md) | Get the total amount of collateral and debt in the Fluid system. |
 |  [getTotalRedistributed()](./lib-base.readablefluid.gettotalredistributed.md) | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedLQTY()](./lib-base.readablefluid.gettotalstakedlqty.md) | Get the total amount of LQTY currently staked. |
-|  [getTotalStakedUniTokens()](./lib-base.readablefluid.gettotalstakedunitokens.md) | Get the total amount of Uniswap ETH/LUSD LP tokens currently staked in liquidity mining. |
+|  [getTotalStakedFLO()](./lib-base.readablefluid.gettotalstakedlqty.md) | Get the total amount of FLO currently staked. |
+|  [getTotalStakedUniTokens()](./lib-base.readablefluid.gettotalstakedunitokens.md) | Get the total amount of Uniswap SEI/SAI LP tokens currently staked in liquidity mining. |
 |  [getTrove(address)](./lib-base.readablefluid.gettrove.md) | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(address)](./lib-base.readablefluid.gettrovebeforeredistribution.md) | Get a Trove in its state after the last direct modification. |
 |  [getTroves(params)](./lib-base.readablefluid.gettroves_1.md) | Get a slice from the list of Troves. |
-|  [getUniTokenAllowance(address)](./lib-base.readablefluid.getunitokenallowance.md) | Get the liquidity mining contract's allowance of a holder's Uniswap ETH/LUSD LP tokens. |
-|  [getUniTokenBalance(address)](./lib-base.readablefluid.getunitokenbalance.md) | Get the amount of Uniswap ETH/LUSD LP tokens held by an address. |
+|  [getUniTokenAllowance(address)](./lib-base.readablefluid.getunitokenallowance.md) | Get the liquidity mining contract's allowance of a holder's Uniswap SEI/SAI LP tokens. |
+|  [getUniTokenBalance(address)](./lib-base.readablefluid.getunitokenbalance.md) | Get the amount of Uniswap SEI/SAI LP tokens held by an address. |
 

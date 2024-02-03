@@ -24,11 +24,11 @@ boolean
 
 ## Example
 
-Can be used to check whether the Liquity protocol is in recovery mode by using it on the return value of [getTotal()](./lib-base.readablefluid.gettotal.md)<!-- -->. For example:
+Can be used to check whether the Fluid protocol is in recovery mode by using it on the return value of [getTotal()](./lib-base.readablefluid.gettotal.md)<!-- -->. For example:
 
 ```typescript
-const total = await liquity.getTotal();
-const price = await liquity.getPrice();
+const total = await fluid.getTotal();
+const price = await fluid.getPrice();
 
 if (total.collateralRatioIsBelowCritical(price)) {
   // Recovery mode is active

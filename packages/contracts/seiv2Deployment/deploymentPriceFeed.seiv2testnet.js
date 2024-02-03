@@ -4,7 +4,7 @@ async function seiv2PriceFeedDeploy(configParams) {
     const deployerWallet = (await ethers.getSigners())[0]
     const stdh = new SEIV2TestnetDeploymentHelper(configParams, deployerWallet)
     const deploymentState = stdh.loadPreviousDeployment()
-    const contracts = await stdh.deployPriceFeedSEIV2Testnet(deploymentState)
+    await stdh.deployPriceFeedSEIV2Testnet(deploymentState)
 }
 
 module.exports = {

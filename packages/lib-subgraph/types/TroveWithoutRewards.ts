@@ -12,7 +12,7 @@ import { TroveStatus } from "./globalTypes";
 export interface TroveWithoutRewards_user_trove_owner {
   __typename: "User";
   /**
-   * User's Ethereum address as a hex-string
+   * User's SEIV2eum address as a hex-string
    */
   id: string;
 }
@@ -41,7 +41,7 @@ export interface TroveWithoutRewards_user_trove {
 export interface TroveWithoutRewards_user {
   __typename: "User";
   /**
-   * User's Ethereum address as a hex-string
+   * User's SEIV2eum address as a hex-string
    */
   id: string;
   trove: TroveWithoutRewards_user_trove | null;

@@ -4,7 +4,7 @@
 
 ## FluidStore.start() method
 
-Start monitoring the blockchain for Liquity state changes.
+Start monitoring the blockchain for Fluid state changes.
 
 <b>Signature:</b>
 

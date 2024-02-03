@@ -29,8 +29,8 @@ const seiV2Testnet = {
     symbol: "SEI",
   },
   rpcUrls: {
-    public: { http: ["https://evm-devnet.seinetwork.io/"] },
-    default: { http: ["https://evm-devnet.seinetwork.io/"] },
+    public: { http: ["https://evm-rpc.arctic-1.seinetwork.io"] },
+    default: { http: ["https://evm-rpc.arctic-1.seinetwork.io"] },
   },
 } as const satisfies Chain;
 

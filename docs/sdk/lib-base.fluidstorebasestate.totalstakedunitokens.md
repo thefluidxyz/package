@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.totalStakedUniTokens property
 
-Total amount of Uniswap ETH/LUSD LP tokens currently staked in liquidity mining.
+Total amount of Uniswap SEI/SAI LP tokens currently staked in liquidity mining.
 
 <b>Signature:</b>
 

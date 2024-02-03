@@ -14,7 +14,7 @@ export interface PopulatedFluidTransaction<P = unknown, T extends SentFluidTrans
 
 ## Remarks
 
-Implemented by [PopulatedEthersLiquityTransaction](./lib-ethers.populatedethersliquitytransaction.md)<!-- -->.
+Implemented by [PopulatedSeisFluidTransaction](./lib-ethers.populatedethersfluidtransaction.md)<!-- -->.
 
 ## Properties
 

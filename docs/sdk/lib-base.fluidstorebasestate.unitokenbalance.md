@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.uniTokenBalance property
 
-User's Uniswap ETH/LUSD LP token balance.
+User's Uniswap SEI/SAI LP token balance.
 
 <b>Signature:</b>
 

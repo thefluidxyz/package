@@ -4,7 +4,7 @@
 
 ## StabilityPoolGainsWithdrawalDetails.collateralGain property
 
-Amount of native currency (e.g. Ether) paid out to the depositor in this transaction.
+Amount of native currency (e.g. Sei) paid out to the depositor in this transaction.
 
 <b>Signature:</b>
 

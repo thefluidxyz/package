@@ -4,7 +4,7 @@
 
 ## TransactableFluid.registerFrontend() method
 
-Register current wallet address as a Liquity frontend.
+Register current wallet address as a Fluid frontend.
 
 <b>Signature:</b>
 
@@ -16,7 +16,7 @@ registerFrontend(kickbackRate: Decimalish): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  kickbackRate | [Decimalish](./lib-base.decimalish.md) | The portion of LQTY rewards to pass onto users of the frontend (between 0 and 1). |
+|  kickbackRate | [Decimalish](./lib-base.decimalish.md) | The portion of FLO rewards to pass onto users of the frontend (between 0 and 1). |
 
 <b>Returns:</b>
 

@@ -12,7 +12,7 @@ import { TroveStatus } from "./globalTypes";
 export interface TroveRawFields_owner {
   __typename: "User";
   /**
-   * User's Ethereum address as a hex-string
+   * User's SEIV2eum address as a hex-string
    */
   id: string;
 }

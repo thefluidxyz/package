@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.liquidityMiningStake property
 
-Amount of Uniswap ETH/LUSD LP tokens the user has staked in liquidity mining.
+Amount of Uniswap SEI/SAI LP tokens the user has staked in liquidity mining.
 
 <b>Signature:</b>
 

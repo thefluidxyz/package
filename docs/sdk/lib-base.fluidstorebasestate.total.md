@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.total property
 
-Total collateral and debt in the Liquity system.
+Total collateral and debt in the Fluid system.
 
 <b>Signature:</b>
 

@@ -4,7 +4,7 @@
 
 ## PopulatableFluid.openTrove() method
 
-Open a new Trove by depositing collateral and borrowing LUSD.
+Open a new Trove by depositing collateral and borrowing SAI.
 
 <b>Signature:</b>
 

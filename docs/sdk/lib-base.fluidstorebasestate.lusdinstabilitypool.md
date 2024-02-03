@@ -4,7 +4,7 @@
 
 ## FluidStoreBaseState.lusdInStabilityPool property
 
-Total amount of LUSD currently deposited in the Stability Pool.
+Total amount of SAI currently deposited in the Stability Pool.
 
 <b>Signature:</b>
 

@@ -4,7 +4,7 @@
 
 ## ReadableFluid.getTotal() method
 
-Get the total amount of collateral and debt in the Liquity system.
+Get the total amount of collateral and debt in the Fluid system.
 
 <b>Signature:</b>
 

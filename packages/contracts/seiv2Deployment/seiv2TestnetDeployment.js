@@ -24,7 +24,6 @@ async function seiv2Deploy(configParams) {
   assert.equal(deployerWallet.address, configParams.fluidAddrs.DEPLOYER)
   // assert.equal(account2Wallet.address, configParams.beneficiaries.ACCOUNT_2)
   let deployerSEIBalance = await ethers.provider.getBalance(deployerWallet.address)
-  console.log (">>>>>>>>>>>", await ethers.provider.getBalance("0x566454eF325a5eA22a831eBb4fF236F74E1372CD"))
   console.log(`deployerSEIBalance before: ${deployerSEIBalance}`)
 
   // Get UniswapV2Factory instance at its deployed address
